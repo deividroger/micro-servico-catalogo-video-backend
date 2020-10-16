@@ -2,10 +2,10 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\AppModelsGender;
+use App\App\Models\Genre;
 use Faker\Generator as Faker;
 
-$factory->define(AppModelsGender::class, function (Faker $faker) {
+$factory->define(Genre::class, function (Faker $faker) {
     return [
         //
     ];
