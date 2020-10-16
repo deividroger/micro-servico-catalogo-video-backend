@@ -1,12 +1,10 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
-
-use App\App\Models\Genre;
+use App\Models\Genre;
 use Faker\Generator as Faker;
 
 $factory->define(Genre::class, function (Faker $faker) {
     return [
-        //
+        'name' => $faker->country
     ];
 });
