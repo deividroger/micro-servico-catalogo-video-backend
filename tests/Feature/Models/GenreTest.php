@@ -89,6 +89,8 @@ class GenreTest extends TestCase
 
         $this->assertNotNull($genre->id);
 
+        $this->assertEquals(36,strlen($genre->id));
+
         $this->assertTrue(Uuid::isValid($genre->id));
     }
 }

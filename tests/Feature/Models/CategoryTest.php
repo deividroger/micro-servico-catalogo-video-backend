@@ -92,12 +92,14 @@ class CategoryTest extends TestCase
     }
 
     public function test_UUID(){
-        
+
         factory(Category::class, 1)->create();
 
         $category = Category::first();
 
         $this->assertNotNull($category->id);
+
+        $this->assertEquals(36,strlen($category->id));
 
         $this->assertTrue(Uuid::isValid($category->id));
     }
