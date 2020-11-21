@@ -7,9 +7,6 @@ services:
         container_name: app
         volumes:
             - .:/var/www
-        environment:
-            - MYSQL_ROOT_PASSWORD=root
-            - MYSQL_USER=root
         networks:
             - app-network
         depends_on:
@@ -39,7 +36,7 @@ services:
         ports:
             - "33006:3306"
         volumes:
-            - ./.docker/dbdata:/var/lib/mysql
+            #- ./.docker/dbdata:/var/lib/mysql
             - ./.docker/mysql:/docker-entrypoint-initdb.d
         environment:
             - MYSQL_ROOT_PASSWORD=root
