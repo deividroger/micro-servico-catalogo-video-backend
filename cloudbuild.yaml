@@ -8,7 +8,7 @@ steps:
       args: ['exec','-u','root','-t','app','chown','-R','www-data:www-data','/var/www']
 
     - id: "Rodando composer"
-      name: 'docker'
+      name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','composer','install']
 
     - id: "Copiando .env"
@@ -20,13 +20,13 @@ steps:
       args: ['exec','-t','app','cp','.env.testing.example','.env.testing']
 
     - id: "Rodando Key:generate"
-      name: 'docker'
+      name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','php','/var/www/artisan','key:generate']
 
     - id: "Rodando o migrations"
-      name: 'docker'
+      name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','php','/var/www/artisan','migrate']
 
     - id: "Rodando o phpunit"
-      name: 'docker'
+      name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','php','/var/www/vendor/bin/phpunit','-c','/var/www/phpunit.xml']
