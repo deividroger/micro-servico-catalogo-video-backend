@@ -29,7 +29,7 @@ steps:
 
     - id: "Rodando ls"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','ls']
+      args: ['exec','-t','app','ls -a']
 
     - id: "print env"
       name: 'gcr.io/cloud-builders/docker'
