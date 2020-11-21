@@ -9,7 +9,7 @@ steps:
 
     - id: "Rodando docker ps"
       name: 'gcr.io/cloud-builders/docker'
-      args: 'ps'
+      args: ['ps']
 
     - id: "Rodando composer"
       name: 'gcr.io/cloud-builders/docker'
@@ -29,7 +29,7 @@ steps:
 
     - id: "Rodando docker ps"
       name: 'gcr.io/cloud-builders/docker'
-      args: 'ps'
+      args: ['ps']
 
     - id: "Rodando o migrations"
       name: 'gcr.io/cloud-builders/docker'
