@@ -27,7 +27,7 @@ steps:
       name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','php','/var/www/artisan','key:generate']
 
-    - id: "Rodando docker ps"
+    - id: "Rodando docker ps [2]"
       name: 'gcr.io/cloud-builders/docker'
       args: ['ps']
 
