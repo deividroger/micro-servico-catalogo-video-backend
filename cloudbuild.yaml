@@ -27,9 +27,13 @@ steps:
       name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','php','/var/www/artisan','key:generate']
 
-    - id: "Rodando docker ps [2]"
+    - id: "Rodando ls"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['ps']
+      args: ['exec','-t','app','bash','ls']
+
+    - id: "print env"
+      name: 'gcr.io/cloud-builders/docker'
+      args: ['exec','-t','app','bash','printenv']
 
     - id: "Rodando o migrations"
       name: 'gcr.io/cloud-builders/docker'
