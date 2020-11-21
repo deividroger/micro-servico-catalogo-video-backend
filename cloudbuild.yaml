@@ -15,6 +15,15 @@ steps:
       name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','composer','install']
 
+   - id: "Limpando Cache"
+     name: 'gcr.io/cloud-builders/docker'
+     args: ['exec','-t','app','php','/var/www/artisan','cache:clear']
+
+    - id: "Limpando Cache Configuração"
+      name: 'gcr.io/cloud-builders/docker'
+      args: ['exec','-t','app','php','/var/www/artisan','config:clear']
+
+
     - id: "Copiando .env"
       name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','cp','.env.example','.env']
@@ -26,14 +35,6 @@ steps:
     - id: "Rodando Key:generate"
       name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','php','/var/www/artisan','key:generate']
-
-    - id: "Rodando ls"
-      name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','ls','-a']
-
-    - id: "print env"
-      name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','printenv']
 
     - id: "Rodando o migrations"
       name: 'gcr.io/cloud-builders/docker'
