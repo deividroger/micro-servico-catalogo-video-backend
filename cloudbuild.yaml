@@ -11,13 +11,13 @@ steps:
       name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','composer','install']
 
-    - id: "Copiando .env"
+    - id: "Copiand .env"
       name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','cp','.env.example','.env']
-
-    - id: "Copiando .env.testing"
+  
+    - id: "Copiand .env.testing"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','cp','.env.testing.example','.env.testing']
+      args: ['exec','-t','app','cp','.env.testing.example','.env.testing']    
 
     - id: "Rodando Key:generate"
       name: 'gcr.io/cloud-builders/docker'
