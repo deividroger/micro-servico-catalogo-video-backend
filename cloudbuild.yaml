@@ -15,14 +15,13 @@ steps:
       name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','composer','install']
 
-   - id: "Limpando Cache"
-     name: 'gcr.io/cloud-builders/docker'
-     args: ['exec','-t','app','php','/var/www/artisan','cache:clear']
+    - id: "Limpando Cache"
+      name: 'gcr.io/cloud-builders/docker'
+      args: ['exec','-t','app','php','/var/www/artisan','cache:clear']
 
     - id: "Limpando Cache Configuração"
       name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','php','/var/www/artisan','config:clear']
-
 
     - id: "Copiando .env"
       name: 'gcr.io/cloud-builders/docker'
