@@ -4,7 +4,6 @@ namespace Tests\Feature\Http\Controllers\Api;
 
 use Tests\TestCase;
 use App\Models\Genre;
-use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\Traits\TestSaves;
 use Tests\Traits\TestValidations;
@@ -68,23 +67,6 @@ class GenreControllerTest extends TestCase
         $this->assertInvalidationInUpdateAction($data, 'boolean');
     }
 
-    protected function assertInvalidationRequired(TestResponse $response)
-    {
-        $this->assertInvalidationFields($response, ['name'], 'required', []);
-
-        $response->assertJsonMissingValidationErrors(["is_active"]);
-    }
-
-    protected function assertInvalidationMax(TestResponse $response)
-    {
-        $this->assertInvalidationFields($response, ['name'], 'max.string', ['max' => 255]);
-    }
-
-    protected function assertInvalidationBoolean(TestResponse $response)
-    {
-        $this->assertInvalidationFields($response, ['is_active'], 'boolean', []);
-    }
-
     public function testStore()
     {
         $data = [
@@ -105,8 +87,6 @@ class GenreControllerTest extends TestCase
             'name' => 'test',
             'is_active' => false
         ];
-
-        $this->genre = factory(Genre::class)->create($data);
 
         $response =  $this->assertUpdate($data, $data + ['deleted_at' => null]);
 
