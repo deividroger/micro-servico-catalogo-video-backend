@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Genre;
-
 use Illuminate\Database\Seeder;
 
 class GenresTableSeeder extends Seeder
