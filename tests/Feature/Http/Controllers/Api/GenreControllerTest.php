@@ -228,6 +228,44 @@ class GenreControllerTest extends TestCase
         $this->assertNotNull(Genre::withTrashed()->find($this->genre->id));
     }
 
+    public function testSyncCategories(){
+        $categoryId = factory(Category::class,3)->create()->pluck('id')->toArray();
+        $sendData = [
+            'name' => 'test',
+            'categories_id' => [$categoryId[0]]
+        ];
+
+        $response = $this->json('POST',$this->routeStore(),$sendData);
+        $this->assertDatabaseHas('category_genre',[
+            'category_id' => $categoryId[0],
+            'genre_id' => $response->json('id')
+        ]);
+
+        $sendData = [
+            'name' => 'test',
+            'categories_id' => [$categoryId[1], $categoryId[2]]
+        ];
+
+        $response = $this->json('PUT',
+                                route('genres.update', ['genre'=> $response->json('id')]),
+                                $sendData );
+
+        $this->assertDatabaseMissing('category_genre',[
+            'category_id' => $categoryId[0],
+            'genre_id' => $response->json('id')
+        ]);
+
+        $this->assertDatabaseHas('category_genre',[
+            'category_id' => $categoryId[1],
+            'genre_id' => $response->json('id')
+        ]);
+
+        $this->assertDatabaseHas('category_genre',[
+            'category_id'=> $categoryId[2],
+            'genre_id' => $response->json('id')
+        ]);
+        
+    }
 
     protected function assertHasCategory($genreId, $categoryId)
     {
