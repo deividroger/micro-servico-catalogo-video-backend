@@ -246,6 +246,10 @@ class VideoControllerTest extends TestCase
             ->andThrow(new TestException());
         $request = \Mockery::mock(Request::class);
 
+        $request->shouldReceive('get')
+            ->withAnyArgs()
+            ->andReturnNull();
+
         $hasError = false;
 
         try {
@@ -284,6 +288,10 @@ class VideoControllerTest extends TestCase
             ->once()
             ->andThrow(new TestException());
         $request = \Mockery::mock(Request::class);
+
+        $request->shouldReceive('get')
+        ->withAnyArgs()
+        ->andReturnNull();
 
         $hasError = false;
 
