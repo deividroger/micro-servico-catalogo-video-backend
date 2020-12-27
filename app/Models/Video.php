@@ -10,7 +10,7 @@ class Video extends Model
 {
     use SoftDeletes, Uuid;
 
-    const RATING_LIST = ['L', '10','12','14','16', '18'];
+    const RATING_LIST = ['L', '10', '12', '14', '16', '18'];
 
     protected $fillable = [
         'title',
@@ -30,7 +30,71 @@ class Video extends Model
     ];
 
     public $incrementing = false;
-    
+
+    public static function  create(array $attributes = [])
+    {
+
+        try {
+            \DB::beginTransaction();
+
+            $obj = static::query()->create($attributes);
+
+            static::handleRelations($obj,$attributes);
+
+            //upload aqui
+
+            \DB::commit();
+            return $obj;
+        } catch (\Exception $ex) {
+           
+            if(isset($obj)){
+                //excluir arqauivos de upload
+            }
+           
+            \DB::rollBack();
+            throw $ex;
+        }
+      
+    }
+
+    public function update(array $attributes = [], array $options = [])
+    {
+        try {
+            \DB::beginTransaction();
+
+            $saved = parent::update($attributes,$options);
+            static::handleRelations($this,$attributes);
+
+            if($saved){
+             //upload aqui
+             //excluir aquivos antigos
+            }
+
+            \DB::commit();
+
+            return $saved;
+        } catch (\Exception $ex) {
+           
+            //excluir arqauivos de upload
+           
+            \DB::rollBack();
+            throw $ex;
+        }
+        
+    }
+
+    public static function handleRelations (Video $video, array $attributes){
+
+        if(isset($attributes['categories_id'])){
+            $video->categories()->sync($attributes['categories_id']);
+        }
+
+        if(isset($attributes['genres_id'])){
+            $video->genres()->sync($attributes['genres_id']);
+        }
+    }
+
+
     public function categories()
     {
         return $this->belongsToMany(Category::class)->withTrashed();
@@ -40,5 +104,4 @@ class Video extends Model
     {
         return $this->belongsToMany(Genre::class)->withTrashed();
     }
-
 }

@@ -33,16 +33,11 @@ class VideoController extends BasicCrudController
         $this->addRuleIfGenreHasCategories($request);
 
         $validateData = $this->validate($request, $this->rulesStore());
-        $self = $this;
-        /** @var Video $obj */
 
-        $obj = \DB::transaction(function () use ($validateData, $request,$self) {
-            $obj =  $this->model()::create($validateData);
-            $self->handleRelations($obj,$request);
-            return $obj;
-        });
+        $obj =  $this->model()::create($validateData);
 
         $obj->refresh();
+
         return $obj;
     }
 
@@ -51,21 +46,10 @@ class VideoController extends BasicCrudController
         $obj = $this->findOrFail($id);
         $this->addRuleIfGenreHasCategories($request);
         $validateData = $this->validate($request, $this->rulesUpdate());
-        $self = $this;
-        
-        $obj = \DB::transaction(function () use ($validateData,$obj, $request,$self) {
-            $obj->update($validateData);
-            $self->handleRelations($obj,$request);
-            return $obj;
-        });
+          
+        $obj->update($validateData);
 
         return $obj;
-    }
-
-    protected function handleRelations($video, Request $request){
-        $video->categories()->sync($request->get('categories_id'));
-        $video->genres()->sync($request->get('genres_id'));
-
     }
 
     protected function addRuleIfGenreHasCategories(Request $request){
