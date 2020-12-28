@@ -236,6 +236,7 @@ class VideoControllerTest extends TestCase
         $this->assertNotNull(Video::withTrashed()->find($this->video->id));
     }
 
+
     protected function assertHasCategory($videoId, $categoryId)
     {
         $this->assertDatabaseHas('category_video', [
