@@ -49,7 +49,8 @@ class VideoTest extends TestCase
             'duration',
             'created_at',
             'updated_at',
-            'deleted_at'
+            'deleted_at',
+            'video_file',
         ],$videoKeys);
 
     }
