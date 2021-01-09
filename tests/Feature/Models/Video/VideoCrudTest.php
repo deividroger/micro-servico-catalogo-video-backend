@@ -1,37 +1,15 @@
 <?php
-
-namespace Tests\Feature\Models;
+namespace Tests\Feature\Models\Video;
 
 use App\Models\Category;
 use App\Models\Genre;
-use App\Models\Video;
+USE App\Models\Video;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Ramsey\Uuid\Uuid;
-use Tests\TestCase;
 
-class VideoTest extends TestCase
-{
+class VideoCrudTest extends BaseVideoTestCase {
+
     use DatabaseMigrations;
-
-    private $data;
-
-     protected function setUp():void
-    {
-        parent::setUp();
-        
-        $this->data = [
-            'title' => 'title',
-                'description' => 'description',
-                'year_launched' => 2020,
-                'rating' => Video::RATING_LIST[0],
-                'duration' => 120,
-                
-        ];
-    }
-    
 
     public function testList(){
         factory(Video::class)->create();
@@ -82,6 +60,29 @@ class VideoTest extends TestCase
         $this->assertHasGenre($video->id,$genre->id);
     }
 
+    public function testRollbackCreate()
+    {
+
+        $hasError = false;
+
+        try {
+            Video::create([
+                'title' => 'title',
+                'description' => 'description',
+                'year_launched' => 2020,
+                'rating' => Video::RATING_LIST[0],
+                'duration' => 120,
+                'categories_id' =>[0,1,2]
+            ]);
+        } catch (QueryException $th) {
+            $this->assertCount(0, Video::all());
+            $hasError = true;
+
+        }
+        $this->assertTrue($hasError);
+
+    }
+
     public function testUpdateWithBasicFields(){
         $video = factory(Video::class)->create(['opened' => false]);
         $video->update($this->data);
@@ -113,28 +114,7 @@ class VideoTest extends TestCase
     }
 
 
-    public function testRollbackCreate()
-    {
-
-        $hasError = false;
-
-        try {
-            Video::create([
-                'title' => 'title',
-                'description' => 'description',
-                'year_launched' => 2020,
-                'rating' => Video::RATING_LIST[0],
-                'duration' => 120,
-                'categories_id' =>[0,1,2]
-            ]);
-        } catch (QueryException $th) {
-            $this->assertCount(0, Video::all());
-            $hasError = true;
-
-        }
-        $this->assertTrue($hasError);
-
-    }
+    
 
     public function testRollbackUpdate(){
 
@@ -203,7 +183,6 @@ class VideoTest extends TestCase
         $this->assertCount(1,$video->genres);
         $this->assertCount(1,$video->categories);
 
-        
     }
 
     public function testSyncCategories()
@@ -301,5 +280,6 @@ class VideoTest extends TestCase
             'video_id' => $videoId
         ]);
     }
+
 
 }
