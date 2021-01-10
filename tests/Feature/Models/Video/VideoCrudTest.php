@@ -27,7 +27,7 @@ class VideoCrudTest extends BaseVideoTestCase {
         $videos = Video::all();
         $this->assertCount(1,$videos);
         $videoKeys = array_keys($videos->first()->getAttributes());
-
+     
         $this->assertEqualsCanonicalizing([
             'id',
             'title',
@@ -40,6 +40,7 @@ class VideoCrudTest extends BaseVideoTestCase {
             'updated_at',
             'deleted_at',
             'video_file',
+            "thumb_file"
         ],$videoKeys);
 
     }
