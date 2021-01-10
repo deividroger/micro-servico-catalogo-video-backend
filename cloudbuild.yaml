@@ -9,7 +9,7 @@ steps:
           - --plaintext-file=./storage/credentials/google/service-account-storage.json
           - --location=global
           - --keyring=testing-lesson
-          - --key-service=service-account
+          - --key=service-account
     
     - id: "Rodando docker-compose"
       name: 'gcr.io/$PROJECT_ID/docker-compose:1.25.5'
