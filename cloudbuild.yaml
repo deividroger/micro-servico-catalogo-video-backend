@@ -1,6 +1,6 @@
 steps:
 
-    - id: "criando arquivo de credenciais"
+    - id: "Gerando service-account-storage.json"
       name: 'gcr.io/cloud-builders/gcloud'
       args: 
           - kms
