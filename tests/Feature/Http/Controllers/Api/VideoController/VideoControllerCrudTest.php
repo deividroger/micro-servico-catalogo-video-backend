@@ -6,6 +6,7 @@ use Tests\Traits\TestValidations;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Video;
+use Illuminate\Support\Arr;
 
 class VideoControllerCrudTest extends BaseVideoControllerTestCase
 {
@@ -152,72 +153,22 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
         $this->assertInvalidationInUpdateAction($data, 'in');
     }
 
-    public function testSave()
-    {
-        $category = factory(Category::class)->create()->first();
-        $genre = factory(Genre::class)->create()->first();
-
-        $genre->categories()->sync($category->id);
-
-
-        $data = [
-            [
-                'send_data' => $this->sendData + ['categories_id' => [$category->id], 'genres_id' => [$genre->id]],
-                'test_data' => $this->sendData + ['opened' => false],
-            ],
-            [
-                'send_data' => $this->sendData + ['opened' => true, 'categories_id' => [$category->id], 'genres_id' => [$genre->id]],
-                'test_data' => $this->sendData + ['opened' => true],
-            ],
-            [
-                'send_data' => $this->sendData + ['rating' => Video::RATING_LIST[1], 'categories_id' => [$category->id], 'genres_id' => [$genre->id]],
-                'test_data' => $this->sendData + ['rating' => Video::RATING_LIST[1]],
-            ],
-        ];
-
-        foreach ($data as $key => $value) {
-            $response = $this->assertStore(
-                $value['send_data'],
-                $value['test_data'] + ['deleted_at' => null]
-            );
-            $response->assertJsonStructure([
-                'created_at',
-                'updated_at'
-            ]);
-            $this->assertHasCategory(
-                $response->json('id'),
-                $value['send_data']['categories_id'][0]
-            );
-            $this->assertHasGenre(
-                $response->json('id'),
-                $value['send_data']['genres_id'][0]
-            );
-            $response = $this->assertUpdate($value['send_data'], $value['test_data'] + ['deleted_at' => null]);
-            $response->assertJsonStructure([
-                'created_at',
-                'updated_at'
-            ]);
-        }
-    }
-
     public function testSaveWithoutFiles(){
 
-        $category = factory(Category::class)->create();
-        $genre = factory(Genre::class)->create();
-        $genre->categories()->sync($category->id);
+        $testData = Arr::except($this->sendData,['categories_id','genres_id']);
 
         $data = [
             [
-                'send_data' => $this->sendData + ['categories_id' => [$category->id], 'genres_id' => [$genre->id]],
-                'test_data' => $this->sendData + ['opened' => false],
+                'send_data' => $this->sendData ,
+                'test_data' => $testData + ['opened' => false],
             ],
             [
-                'send_data' => $this->sendData + ['opened' => true, 'categories_id' => [$category->id], 'genres_id' => [$genre->id]],
-                'test_data' => $this->sendData + ['opened' => true],
+                'send_data' => $this->sendData + ['opened' => true],
+                'test_data' => $testData + ['opened' => true],
             ],
             [
-                'send_data' => $this->sendData + ['rating' => Video::RATING_LIST[1], 'categories_id' => [$category->id], 'genres_id' => [$genre->id]],
-                'test_data' => $this->sendData + ['rating' => Video::RATING_LIST[1]],
+                'send_data' => $this->sendData + ['rating' => Video::RATING_LIST[1]],
+                'test_data' => $testData + ['rating' => Video::RATING_LIST[1]],
             ],
         ];
 
