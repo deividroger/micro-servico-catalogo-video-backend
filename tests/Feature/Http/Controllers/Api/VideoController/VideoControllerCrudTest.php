@@ -1,17 +1,56 @@
 <?php
 namespace Tests\Feature\Http\Controllers\Api\VideoController;
 
+use App\Http\Resources\VideoResource;
 use Tests\Traits\TestSaves;
 use Tests\Traits\TestValidations;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Video;
 use Illuminate\Support\Arr;
+use Tests\Traits\TestResources;
 
 class VideoControllerCrudTest extends BaseVideoControllerTestCase
 {
-    use TestValidations, TestSaves;
+    use TestValidations, TestSaves, TestResources;
     
+    private $fieldsSerialized = [
+        'id',
+        'title',
+        'description',
+        'year_launched',
+        'rating',
+        'opened',
+        'thumb_file_url',
+        'banner_file_url',
+        'video_file_url',
+        'trailer_file_url',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'categories' => [
+            '*' => [
+                'id',
+                'name',
+                'description',
+                'is_active',
+                'created_at',
+                'updated_at',
+                'deleted_at'
+            ]
+        ],
+        'genres' => [
+            '*' => [
+                'id',
+                'name',
+                'is_active',
+                'created_at',
+                'updated_at',
+                'deleted_at'
+            ]
+        ]
+    ];
+
 
     public function testIndex()
     {
@@ -20,7 +59,19 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
         $response
             ->assertStatus(200)
-            ->assertJson([$this->video->toArray()]);
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => $this->fieldsSerialized
+                ],
+                'meta' => [],
+                'links' => []
+            ]);
+        
+        
+        $this->assertResource($response,VideoResource::collection( collect([$this->video])));
+       
+       $this->assertIfFileUrlExists($this->video,$response);
+
     }
 
 
@@ -30,7 +81,16 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
         $response
             ->assertStatus(200)
-            ->assertJson($this->video->toArray());
+            ->assertJsonStructure([
+                'data'=> $this->fieldsSerialized
+            ]);
+
+        $this->assertResource($response, new VideoResource(
+            Video::find($response->json('data.id'))
+        ));        
+
+        $this->assertIfFileUrlExists($this->video,$response);
+        
     }
 
     public function testInvalidationRequired()
@@ -178,22 +238,25 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
                 $value['test_data'] + ['deleted_at' => null]
             );
             $response->assertJsonStructure([
-                'created_at',
-                'updated_at'
+                'data' => $this->fieldsSerialized
             ]);
-            $this->assertHasCategory(
-                $response->json('id'),
-                $value['send_data']['categories_id'][0]
-            );
-            $this->assertHasGenre(
-                $response->json('id'),
-                $value['send_data']['genres_id'][0]
-            );
+
+            $this->assertResource($response, new VideoResource(
+                Video::find($response->json('data.id'))
+            ));
+
+            $this->assertIfFileUrlExists($this->video,$response);
+
             $response = $this->assertUpdate($value['send_data'], $value['test_data'] + ['deleted_at' => null]);
             $response->assertJsonStructure([
-                'created_at',
-                'updated_at'
+                 'data' => $this->fieldsSerialized
             ]);
+
+            $this->assertResource($response, new VideoResource(
+                Video::find($response->json('data.id'))
+            ));
+
+            $this->assertIfFileUrlExists($this->video,$response);
         }
 
     }
