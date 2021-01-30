@@ -1,21 +1,20 @@
 import { Box } from '@material-ui/core';
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import Breadcrumbs from './components/Breadcrumbs';
 import { Navbar } from './components/Navbar';
-import { Page } from './components/Page';
-//import logo from './logo.svg';
-//import './App.css';
-//import { Button } from '@material-ui/core'
+import AppRouter from './routes/AppRouter';
 
 const App: React.FC = () => {
   return (
     <React.Fragment>
-      <Navbar />
-      <Box paddingTop={'70px'}>
-      <Page title={'Categorias'}>
-        Conteúdo aqui
-      </Page>
-      </Box>
-      
+      <BrowserRouter>
+        <Navbar />
+        <Box paddingTop={'70px'}>
+          <Breadcrumbs />
+          <AppRouter />
+        </Box>
+      </BrowserRouter>
     </React.Fragment>
   );
 }
