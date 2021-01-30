@@ -1,6 +1,9 @@
-FROM php:7.3.6-fpm-alpine3.9
+FROM php:7.3.6-fpm-alpine3.10
 
 RUN apk add --no-cache shadow openssl bash mysql-client nodejs npm freetype-dev libjpeg-turbo-dev libjpeg-turbo libpng-dev git
+
+#RUN touch /root/.bashrc | echo "PS1='\w\$ '" >> /root/.bashrc
+
 RUN docker-php-ext-install pdo pdo_mysql gd
 
 RUN docker-php-ext-configure gd \
