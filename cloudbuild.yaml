@@ -31,32 +31,32 @@ steps:
 
     - id: "Rodando composer"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','composer','install']
+      args: ['exec','-t','app','composer','install','-d','/var/www/backend']
 
     - id: "Limpando Cache"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','php','/var/www/artisan','cache:clear']
+      args: ['exec','-t','app','php','/var/www/backend/artisan','cache:clear']
 
     - id: "Limpando Cache Configuração"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','php','/var/www/artisan','config:clear']
+      args: ['exec','-t','app','php','/var/www/backend/artisan','config:clear']
 
     - id: "Copiando .env"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','cp','.env.example','.env']
+      args: ['exec','-t','app','cp','/var/www/backend/.env.example','/var/www/backend/.env']
   
     - id: "Copiando .env.testing"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','cp','.env.testing.example','.env.testing']    
+      args: ['exec','-t','app','cp','/var/www/backend/.env.testing.example','/var/www/backend/.env.testing']    
 
     - id: "Rodando Key:generate"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','php','/var/www/artisan','key:generate']
+      args: ['exec','-t','app','php','/var/www/backend/artisan','key:generate']
 
     - id: "Rodando o migrations"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','php','/var/www/artisan','migrate']
+      args: ['exec','-t','app','php','/var/www/backend/artisan','migrate']
 
     - id: "Rodando o phpunit"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['exec','-t','app','php','/var/www/vendor/bin/phpunit','-c','/var/www/phpunit.xml']
+      args: ['exec','-t','app','php','/var/www/backend/vendor/bin/phpunit','-c','/var/www/backend/phpunit.xml']
