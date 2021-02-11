@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme, createStyles, Box} from '@material-ui/core';
 import Link, { LinkProps } from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -12,6 +12,7 @@ import RouteParser from 'route-parser';
 import { Container } from '@material-ui/core';
 
 const breadcrumbNameMap: { [key: string]: string } = {}
+
 routes.forEach(route => breadcrumbNameMap[route.path as string] = route.label);
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -75,11 +76,14 @@ export default function Breadcrumbs() {
 
   return (
     <Container>
+      <Box paddingBottom={1}>
       <Route>
         {
           ({ location }: { location: Location }) => makeBreakcrumb(location)
         }
       </Route>
+      </Box>
+      
     </Container>
 
   );
