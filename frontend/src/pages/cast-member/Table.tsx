@@ -5,12 +5,27 @@ import {httpVideo} from '../../util/http'
 import { Chip } from '@material-ui/core';
 import format from 'date-fns/format';
 import parseIso from 'date-fns/parseISO';
+
+
+const CastMemberTypeMap = {
+    1: 'Diretor',
+    2: 'Ator'
+};
+
 const columnsDefinition:MUIDataTableColumn[] = [
     {
         name: 'name',
         label: 'Nome',
     },
-
+    {
+        name: 'type',
+        label: 'Tipo',
+        options:{
+            customBodyRender(value,tableMeta,updateValue){
+                return CastMemberTypeMap[value];
+            }
+        }
+    },
     {
         name: 'is_active',
         label: 'Ativo?',
@@ -41,7 +56,7 @@ type Props = {
 
 
     useEffect(() => {
-        httpVideo.get('categories').then(
+        httpVideo.get('cast_members').then(
             response => setData(  response.data.data)
         )
     },[]);
