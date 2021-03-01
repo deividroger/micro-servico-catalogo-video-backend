@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect  } from 'react';
 import MUIDataTable, {MUIDataTableColumn} from 'mui-datatables'
-import {httpVideo} from '../../util/http'
 import { Chip } from '@material-ui/core';
 import format from 'date-fns/format';
 import parseIso from 'date-fns/parseISO';
+import genreHttp from '../../util/http/genre-http';
 
 const columnsDefinition:MUIDataTableColumn[] = [
     {
@@ -50,9 +50,11 @@ type Props = {
 
 
     useEffect(() => {
-        httpVideo.get('genres').then(
-            response => setData(  response.data.data)
-        )
+
+        genreHttp
+        .list()
+        .then( ({data}) => setData(data.data) );
+
     },[]);
     
     return (

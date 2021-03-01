@@ -1,4 +1,5 @@
 import GenreList from '../pages/genre/PageList';
+import GenrePageForm from '../pages/genre/PageForm';
 
 export const genresRoutes = [
     {
@@ -12,7 +13,7 @@ export const genresRoutes = [
         name: 'genres.create',
         label: 'Criar gênero',
         path: '/genres/create',
-        component: GenreList,
+        component: GenrePageForm,
         exact: true
     }
 ];
