@@ -2,9 +2,9 @@
 import React, { useState, useEffect  } from 'react';
 import MUIDataTable, {MUIDataTableColumn} from 'mui-datatables'
 import {httpVideo} from '../../util/http'
-import { Chip } from '@material-ui/core';
 import format from 'date-fns/format';
 import parseIso from 'date-fns/parseISO';
+import { BadgeYes,BadgeNo } from '../../components/Badge';
 
 
 const CastMemberTypeMap = {
@@ -31,7 +31,7 @@ const columnsDefinition:MUIDataTableColumn[] = [
         label: 'Ativo?',
         options:{
             customBodyRender(value,tableMeta,updateValue){
-                return value? <Chip label="Sim" color="primary" /> : <Chip label="Não" color="secondary" />
+                return value? <BadgeYes/> : <BadgeNo/>
             }
         }
     },{

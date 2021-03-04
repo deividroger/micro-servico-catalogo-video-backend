@@ -13,13 +13,15 @@ const usestyles = makeStyles((theme: Theme) => {
     }
 });
 
+
 export const Form = () => {
 
     const classes = usestyles();
 
     const buttonProps: ButtonProps = {
         className: classes.submit,
-        variant: "outlined"
+        variant: "outlined",
+        color:"secondary"
     };
 
 

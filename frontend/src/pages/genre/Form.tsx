@@ -22,7 +22,8 @@ export const Form = () => {
 
     const buttonProps: ButtonProps = {
         className: classes.submit,
-        variant: "outlined"
+        variant: "outlined",
+        color:"secondary"
     };
 
     const [categories,setCategories] = useState<any[]>([]);
