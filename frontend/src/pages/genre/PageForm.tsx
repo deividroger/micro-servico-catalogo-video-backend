@@ -4,7 +4,7 @@ import {Page} from '../../components/Page';
 
 const PageForm = () => {
     return (
-        <Page title={'Criar membro de gênero'}>
+        <Page title={'Criar Gênero'}>
             <Form/>
         </Page>
 

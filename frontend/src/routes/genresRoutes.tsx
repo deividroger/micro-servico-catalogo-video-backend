@@ -15,6 +15,13 @@ export const genresRoutes = [
         path: '/genres/create',
         component: GenrePageForm,
         exact: true
+    },
+    {
+        name: 'genres.edit' ,
+        label: 'Editar gênero',
+        path: '/genres/:id/edit',
+        component: GenrePageForm,
+        exact: true
     }
 ];
 

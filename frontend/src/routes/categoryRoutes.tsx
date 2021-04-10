@@ -10,6 +10,15 @@ export const categoryRoutes = [
         exact: true
     },
     {
+        name: 'categories.edit',
+        label: 'Editar categoria',
+        path: '/categories/:id/edit',
+        component: CategoryPageForm,
+        exact: true
+    }
+    
+    ,
+    {
         name: 'categories.list',
         label: 'Listar categorias',
         path: '/categories',

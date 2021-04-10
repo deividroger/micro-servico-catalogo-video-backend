@@ -6,13 +6,22 @@ import CastMemberPageForm from '../pages/cast-member/PageForm';
         name: 'cast_members.create',
         label: 'Criar membro de elenco',
         path: '/cast-members/create',
-        component: CastMemberPageForm
+        component: CastMemberPageForm,
+        exact: true
     },
     {
         name: 'cast_members.list',
         label: 'Listar membros de elencos',
         path: '/cast-members',
-        component: CastMemberList
+        component: CastMemberList,
+        exact: true
+    },
+    {
+        name: 'cast_members.edit' ,
+        label: 'Editar membro de elenco',
+        path: '/cast-members/:id/edit',
+        component: CastMemberPageForm,
+        exact: true
     }
 ];
 
