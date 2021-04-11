@@ -36,16 +36,16 @@ export const Form = () => {
     const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm({
 
         validationSchema: validationSchema,
-        
+
     });
-    
+
     const classes = useStyles();
     const snackBar = useSnackbar();
     const history = useHistory();
     const { id }: any = useParams();
-    const [castMember,setCastMember] = useState<{id: string | null}>(null);
-    const [loading,setLoading] = useState<boolean>(false);
-    
+    const [castMember, setCastMember] = useState < { id: string | null } > (null);
+    const [loading, setLoading] = useState < boolean > (false);
+
 
     const buttonProps: ButtonProps = {
         variant: "contained",
@@ -55,28 +55,38 @@ export const Form = () => {
         disabled: loading
     };
 
-    useEffect(()=>{
-        if(!id) {
+    useEffect(() => {
+
+        let isSubscribed = true;
+
+        if (!id) {
             return;
         }
 
-        (async () => {
-            setLoading(true);
-            try{
-                const {data} = await castMemberHttp.get(id);
-                setCastMember(data.data);
-                reset(data.data);
-            }catch(error){
-                console.error(error);
-                snackBar.enqueueSnackbar("Não foi possível carregar as informações", {
-                    variant: "error"
-                });
-            }finally{
-                setLoading(false);
-            }
-        })();
+        if (isSubscribed) {
 
-    },[]);
+            (async () => {
+                setLoading(true);
+                try {
+                    const { data } = await castMemberHttp.get(id);
+                    setCastMember(data.data);
+                    reset(data.data);
+                } catch (error) {
+                    console.error(error);
+                    snackBar.enqueueSnackbar("Não foi possível carregar as informações", {
+                        variant: "error"
+                    });
+                } finally {
+                    setLoading(false);
+                }
+            })();
+        }
+
+        return () => {
+            isSubscribed = false;
+        };
+
+    }, []);
 
     useEffect(() => {
         register({ name: "type" })
@@ -84,14 +94,14 @@ export const Form = () => {
     }, [register]);
 
     async function onSubmit(formData, event) {
-        
+
         setLoading(true);
 
-        try{
-            const  http = !castMember 
-                    ? castMemberHttp.create(formData)
-                    : castMemberHttp.update(castMember.id,formData);
-            const {data} = await http;
+        try {
+            const http = !castMember
+                ? castMemberHttp.create(formData)
+                : castMemberHttp.update(castMember.id, formData);
+            const { data } = await http;
 
             snackBar.enqueueSnackbar("Membro de elenco salvo com sucesso", {
                 variant: "success"
@@ -105,17 +115,17 @@ export const Form = () => {
                         :
                         history.push(`/cast-members/${data.data.id}/edit`)
                 ) : history.push('/cast-members')
-            });            
+            });
 
-        }catch(error){
+        } catch (error) {
             console.error(error);
             snackBar.enqueueSnackbar("Não foi possível salvar o membro de elenco", {
                 variant: "error"
             });
-        }finally{
+        } finally {
             setLoading(false);
         }
-        
+
     }
 
     return (
@@ -129,11 +139,11 @@ export const Form = () => {
                 disabled={loading}
                 error={errors.name !== undefined}
                 helperText={errors.name && errors.name.message}
-                InputLabelProps={{shrink:true}}
+                InputLabelProps={{ shrink: true }}
             />
 
-            <FormControl 
-                margin={"normal"}  
+            <FormControl
+                margin={"normal"}
                 error={errors.type !== undefined}
                 disabled={loading}
             >
@@ -143,8 +153,8 @@ export const Form = () => {
                     onChange={(e) => {
                         setValue("type", parseInt(e.target.value));
                     }}
-                    value= {watch('type') + ""}
-                    >
+                    value={watch('type') + ""}
+                >
 
                     <FormControlLabel value="1" control={<Radio />} label="Diretor" />
                     <FormControlLabel value="2" control={<Radio />} label="Ator" />
@@ -152,13 +162,13 @@ export const Form = () => {
 
                 {
                     errors.type && <FormHelperText id="text-helper-text"> {errors.type.message} </FormHelperText>
-                    
+
                 }
 
             </FormControl>
 
             <Box dir={"rtl"}>
-                
+
                 <Button
                     color={"primary"}
 

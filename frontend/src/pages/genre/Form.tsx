@@ -33,14 +33,12 @@ const validationSchema = yup.object().shape({
 
 export const Form = () => {
 
-
     const { register, handleSubmit, getValues, setValue, watch, errors, reset } = useForm({
         validationSchema,
         defaultValues: {
             categories_id: [] as any
         }
     });
-
 
     const classes = usestyles();
     const snackbar = useSnackbar();
@@ -62,34 +60,43 @@ export const Form = () => {
 
     useEffect(() => {
 
-        (async () => {
-            setLoading(true);
-            const promises = [categoryHttp.list()];
-            if (id) {
-                promises.push(genreHttp.get(id));
-            }
-            try {
-                const [categoriesResponse, genreResponse] = await Promise.all(promises);
-                setCategories(categoriesResponse.data.data);
+        let isSubscribed = true;
 
+        if (isSubscribed) {
+
+            (async () => {
+                setLoading(true);
+                const promises = [categoryHttp.list()];
                 if (id) {
-                    setGenre(genreResponse.data.data);
-                    reset({
-                        ...genreResponse.data.data,
-                        categories_id: genreResponse.data.data.categories.map(category => category.id)
-                    });
+                    promises.push(genreHttp.get(id));
                 }
+                try {
+                    const [categoriesResponse, genreResponse] = await Promise.all(promises);
+                    setCategories(categoriesResponse.data.data);
 
-            } catch (error) {
-                console.error(error);
-                snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
-                    variant: "error"
-                })
-            } finally {
-                setLoading(false);
-            }
-        })();
-        
+                    if (id) {
+                        setGenre(genreResponse.data.data);
+                        const categories_id = genreResponse.data.data.categories.map(category => category.id)
+                        reset({
+                            ...genreResponse.data.data,
+                            categories_id
+                        });
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                    snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
+                        variant: "error"
+                    })
+                } finally {
+                    setLoading(false);
+                }
+            })();
+        }
+
+        return () => {
+            isSubscribed = false;
+        };
 
     }, []);
 
@@ -148,8 +155,8 @@ export const Form = () => {
                 inputRef={register}
                 disabled={loading}
                 error={errors.name !== undefined}
-                helperText= {errors.name && errors.name.message}
-                InputLabelProps={{shrink: true}}
+                helperText={errors.name && errors.name.message}
+                InputLabelProps={{ shrink: true }}
             />
 
             <TextField
@@ -168,7 +175,7 @@ export const Form = () => {
                 disabled={loading}
                 error={errors.categories_id !== undefined}
                 helperText={errors.categories_id && errors.categories_id.message}
-                InputLabelProps={{shrink:true}}
+                InputLabelProps={{ shrink: true }}
             >
                 <MenuItem value="" disabled>
                     <em>Selecione categorias</em>

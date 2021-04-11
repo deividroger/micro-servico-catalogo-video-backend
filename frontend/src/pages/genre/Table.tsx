@@ -1,12 +1,12 @@
 
-import React, { useState, useEffect  } from 'react';
-import MUIDataTable, {MUIDataTableColumn} from 'mui-datatables'
+import React, { useState, useEffect } from 'react';
+import MUIDataTable, { MUIDataTableColumn } from 'mui-datatables'
 import format from 'date-fns/format';
 import parseIso from 'date-fns/parseISO';
 import genreHttp from '../../util/http/genre-http';
-import { BadgeYes,BadgeNo } from '../../components/Badge';
+import { BadgeYes, BadgeNo } from '../../components/Badge';
 
-const columnsDefinition:MUIDataTableColumn[] = [
+const columnsDefinition: MUIDataTableColumn[] = [
     {
         name: 'name',
         label: 'Nome',
@@ -15,26 +15,26 @@ const columnsDefinition:MUIDataTableColumn[] = [
         name: 'categories',
         label: 'Categorias',
         options: {
-            customBodyRender(value,tableMeta,updateValue){
+            customBodyRender(value, tableMeta, updateValue) {
 
-                return value.map(value =>value.name).join(', ');
+                return value.map(value => value.name).join(', ');
             }
         }
     },
     {
         name: 'is_active',
         label: 'Ativo?',
-        options:{
-            customBodyRender(value,tableMeta,updateValue){
-                return value? <BadgeYes/> : <BadgeNo/>
+        options: {
+            customBodyRender(value, tableMeta, updateValue) {
+                return value ? <BadgeYes /> : <BadgeNo />
             }
         }
-    },{
+    }, {
         name: 'created_at',
         label: 'Criado em',
-        options:{
-            customBodyRender(value,tableMeta,updateValue){
-                return <span> {  format( parseIso(value),'dd/MM/yyyy') } </span>
+        options: {
+            customBodyRender(value, tableMeta, updateValue) {
+                return <span> {format(parseIso(value), 'dd/MM/yyyy')} </span>
             }
         }
     }
@@ -42,28 +42,38 @@ const columnsDefinition:MUIDataTableColumn[] = [
 
 
 type Props = {
-    
+
 };
- const Table = (props: Props) => {
-    
-    const[data,setData] = useState([]);
+const Table = (props: Props) => {
+
+    const [data, setData] = useState([]);
 
 
     useEffect(() => {
 
+        let isSubscribed = true;
+
         (async () => {
-            const {data} = await genreHttp.list();
-            setData(data.data);
+
+            if (isSubscribed) {
+
+                const { data } = await genreHttp.list();
+                setData(data.data);
+            }
         })();
 
-    },[]);
-    
+        return () => {
+            isSubscribed = false;
+        };
+
+    }, []);
+
     return (
-        <MUIDataTable 
-        title=''
-        columns={columnsDefinition} data={data} />
-        
-        
+        <MUIDataTable
+            title=''
+            columns={columnsDefinition} data={data} />
+
+
     );
 };
 export default Table;

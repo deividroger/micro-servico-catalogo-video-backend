@@ -55,27 +55,34 @@ export const Form = () => {
 
     useEffect(() => {
 
+        let isSubscribed = true;
 
         if (!id) {
             return;
         };
 
-        (async () => {
-            setLoding(true);
-            try {
-                const { data } = await categoryHttp.get(id);
-                setCategory(data.data)
-                reset(data.data);
-            } catch (error) {
-                console.error(error);
-                snackBar.enqueueSnackbar("Não foi possível carregar as informações", {
-                    variant: 'error'
-                });
-            } finally {
-                setLoding(false);
-            }
-        })();
-        
+        if (isSubscribed) {
+
+            (async () => {
+                setLoding(true);
+                try {
+                    const { data } = await categoryHttp.get(id);
+                    setCategory(data.data)
+                    reset(data.data);
+                } catch (error) {
+                    console.error(error);
+                    snackBar.enqueueSnackbar("Não foi possível carregar as informações", {
+                        variant: 'error'
+                    });
+                } finally {
+                    setLoding(false);
+                }
+            })();
+        }
+
+        return () => {
+            isSubscribed = false;
+        };
 
     }, []);
 
