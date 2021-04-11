@@ -62,7 +62,7 @@ export const Form = () => {
 
     useEffect(() => {
 
-        async function loadData() {
+        (async () => {
             setLoading(true);
             const promises = [categoryHttp.list()];
             if (id) {
@@ -81,15 +81,15 @@ export const Form = () => {
                 }
 
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
                     variant: "error"
                 })
             } finally {
                 setLoading(false);
             }
-        }
-        loadData();
+        })();
+        
 
     }, []);
 
@@ -127,7 +127,7 @@ export const Form = () => {
             });
 
         } catch (error) {
-            console.log(error);
+            console.error(error);
             snackbar.enqueueSnackbar("Não foi possível salvar o gênero", {
                 variant: "error"
             });

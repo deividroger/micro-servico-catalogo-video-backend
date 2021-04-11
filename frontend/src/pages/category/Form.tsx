@@ -60,24 +60,22 @@ export const Form = () => {
             return;
         };
 
-        setLoding(true);
-
-        async function getCategory() {
-            setLoding(false);
+        (async () => {
+            setLoding(true);
             try {
                 const { data } = await categoryHttp.get(id);
                 setCategory(data.data)
                 reset(data.data);
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 snackBar.enqueueSnackbar("Não foi possível carregar as informações", {
                     variant: 'error'
                 });
             } finally {
                 setLoding(false);
             }
-        }
-        getCategory();
+        })();
+        
 
     }, []);
 
@@ -112,7 +110,7 @@ export const Form = () => {
             });
 
         } catch (error) {
-            console.log(error);
+            console.error(error);
             snackBar.enqueueSnackbar("Não foi possível salvar a categoria", {
                 variant: 'error'
             });

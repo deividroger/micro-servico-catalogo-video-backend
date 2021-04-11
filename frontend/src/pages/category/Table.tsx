@@ -44,10 +44,11 @@ type Props = {
     const[data,setData] = useState<Category[]>([]);
 
     useEffect(() => {
-        categoryHttp
-        .list<{ data: Category[] }>()
-        .then(({data}) => setData(data.data) 
-        );
+
+        (async () => {
+            const {data} = await categoryHttp.list<{ data: Category[] }>();
+            setData(data.data);
+        })();
 
     },[]);
     

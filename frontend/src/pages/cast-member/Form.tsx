@@ -9,6 +9,7 @@ import * as yup from '../../util/vendor/yup'
 import { useHistory, useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
+
 const useStyles = makeStyles((theme: Theme) => {
     return {
         submit: {
@@ -59,23 +60,21 @@ export const Form = () => {
             return;
         }
 
-        async function getCastMember(){
+        (async () => {
             setLoading(true);
             try{
                 const {data} = await castMemberHttp.get(id);
                 setCastMember(data.data);
                 reset(data.data);
             }catch(error){
-                console.log(error);
+                console.error(error);
                 snackBar.enqueueSnackbar("Não foi possível carregar as informações", {
                     variant: "error"
                 });
             }finally{
                 setLoading(false);
             }
-        }
-
-        getCastMember();
+        })();
 
     },[]);
 
@@ -86,7 +85,7 @@ export const Form = () => {
 
     async function onSubmit(formData, event) {
         
-        setLoading(false);
+        setLoading(true);
 
         try{
             const  http = !castMember 
@@ -109,7 +108,7 @@ export const Form = () => {
             });            
 
         }catch(error){
-            console.log(error);
+            console.error(error);
             snackBar.enqueueSnackbar("Não foi possível salvar o membro de elenco", {
                 variant: "error"
             });

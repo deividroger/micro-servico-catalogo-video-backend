@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect  } from 'react';
 import MUIDataTable, {MUIDataTableColumn} from 'mui-datatables'
-import {httpVideo} from '../../util/http'
+import castMemberHttp from '../../util/http/cast-member-http'
 import format from 'date-fns/format';
 import parseIso from 'date-fns/parseISO';
 import { BadgeYes,BadgeNo } from '../../components/Badge';
@@ -45,8 +45,6 @@ const columnsDefinition:MUIDataTableColumn[] = [
     }
 ];
 
-
-
 type Props = {
     
 };
@@ -54,11 +52,13 @@ type Props = {
     
     const[data,setData] = useState([]);
 
-
     useEffect(() => {
-        httpVideo.get('cast_members').then(
-            response => setData(  response.data.data)
-        )
+
+        (async () => {
+          const {data} =  await castMemberHttp.list();
+          setData( data.data);
+        })();
+        
     },[]);
     
     return (

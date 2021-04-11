@@ -51,9 +51,10 @@ type Props = {
 
     useEffect(() => {
 
-        genreHttp
-        .list()
-        .then( ({data}) => setData(data.data) );
+        (async () => {
+            const {data} = await genreHttp.list();
+            setData(data.data);
+        })();
 
     },[]);
     
