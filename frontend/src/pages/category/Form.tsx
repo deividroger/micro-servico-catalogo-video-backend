@@ -1,21 +1,15 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
-import { TextField, Checkbox, Box, Button, makeStyles, Theme, FormControlLabel } from '@material-ui/core'
-import { ButtonProps } from '@material-ui/core/Button'
+import { TextField, Checkbox, FormControlLabel } from '@material-ui/core'
+
 import useForm from 'react-hook-form';
 import categoryHttp from '../../util/http/category-http';
 import * as yup from '../../util/vendor/yup'
 import { useHistory, useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
+import { Category } from '../../util/models';
+import SubmmitActions from '../../components/SubmmitActions';
 
-
-const useStyles = makeStyles((theme: Theme) => {
-    return {
-        submit: {
-            margin: theme.spacing(1)
-        }
-    }
-});
 
 const validationSchema = yup.object().shape({
     name: yup
@@ -28,8 +22,7 @@ const validationSchema = yup.object().shape({
 
 export const Form = () => {
 
-
-    const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm({
+    const { register, handleSubmit, getValues, setValue, errors, reset, watch, triggerValidation } = useForm({
 
         validationSchema: validationSchema,
         defaultValues: {
@@ -37,21 +30,11 @@ export const Form = () => {
         }
     });
 
-    const classes = useStyles();
     const snackBar = useSnackbar();
     const { id }: any = useParams();
     const history = useHistory();
-    const [category, setCategory] = useState < { id: string } | null > (null);
+    const [category, setCategory] = useState < Category | null > (null);
     const [loading, setLoding] = useState < boolean > (false);
-
-
-    const buttonProps: ButtonProps = {
-        variant: "contained",
-        size: "medium",
-        className: classes.submit,
-        color: "secondary",
-        disabled: loading
-    };
 
     useEffect(() => {
 
@@ -171,19 +154,10 @@ export const Form = () => {
                 disabled={loading}
             />
 
-            <Box dir={"rtl"}>
+            <SubmmitActions disabledButtons={loading} handleSave={() => triggerValidation().then(isvalid => { isvalid && onSubmit(getValues(), null) })} />
 
-                <Button
-                    color={"primary"}
-
-                    {...buttonProps}
-                    onClick={() => onSubmit(getValues(), null)}
-                > Salvar</Button>
-
-                <Button {...buttonProps} type={"submit"} >Salvar e continuar editando</Button>
-
-            </Box>
         </form>
 
     );
 };
+

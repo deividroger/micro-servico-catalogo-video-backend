@@ -5,7 +5,7 @@ import castMemberHttp from '../../util/http/cast-member-http'
 import format from 'date-fns/format';
 import parseIso from 'date-fns/parseISO';
 import { BadgeYes, BadgeNo } from '../../components/Badge';
-
+import {CastMember, ListResponse} from '../../util/models';    
 
 const CastMemberTypeMap = {
     1: 'Diretor',
@@ -45,12 +45,9 @@ const columnsDefinition: MUIDataTableColumn[] = [
     }
 ];
 
-type Props = {
+const Table = () => {
 
-};
-const Table = (props: Props) => {
-
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<CastMember[]>([]);
 
     useEffect(() => {
 
@@ -59,7 +56,7 @@ const Table = (props: Props) => {
         (async () => {
 
             if(isSubscribed){
-            const { data } = await castMemberHttp.list();
+            const { data } = await castMemberHttp.list<ListResponse<CastMember>>();
             setData(data.data);
         }
 
