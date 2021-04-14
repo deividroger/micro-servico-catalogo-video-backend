@@ -2,13 +2,13 @@ import * as React from 'react';
 import useForm from 'react-hook-form';
 import castMemberHttp from '../../util/http/cast-member-http';
 import { useEffect, useState } from 'react'
-import {  FormControl, FormLabel, Radio, TextField,  RadioGroup, FormControlLabel,  FormHelperText } from '@material-ui/core';
+import { FormControl, FormLabel, Radio, TextField, RadioGroup, FormControlLabel, FormHelperText } from '@material-ui/core';
 import * as yup from '../../util/vendor/yup'
 import { useHistory, useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
-import {CastMember} from '../../util/models';    
+import { CastMember } from '../../util/models';
 import SubmmitActions from '../../components/SubmmitActions';
-
+import { DefaultForm } from '../../components/DefaultForm'
 
 
 const validationSchema = yup.object().shape({
@@ -26,7 +26,7 @@ const validationSchema = yup.object().shape({
 
 export const Form = () => {
 
-    const { register, handleSubmit, getValues, setValue, errors, reset, watch,triggerValidation } = useForm({
+    const { register, handleSubmit, getValues, setValue, errors, reset, watch, triggerValidation } = useForm({
 
         validationSchema: validationSchema,
 
@@ -35,7 +35,7 @@ export const Form = () => {
     const snackBar = useSnackbar();
     const history = useHistory();
     const { id }: any = useParams();
-    const [castMember, setCastMember] = useState <  CastMember | null  > (null);
+    const [castMember, setCastMember] = useState < CastMember | null > (null);
     const [loading, setLoading] = useState < boolean > (false);
 
 
@@ -114,7 +114,8 @@ export const Form = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <DefaultForm onSubmit={handleSubmit(onSubmit)}>
+
             <TextField
                 name="name"
                 label="Nome"
@@ -154,7 +155,7 @@ export const Form = () => {
 
             <SubmmitActions disabledButtons={loading} handleSave={() => triggerValidation().then(isvalid => { isvalid && onSubmit(getValues(), null) })} />
 
-        </form>
+        </DefaultForm>
     );
 
 }

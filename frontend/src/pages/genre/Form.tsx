@@ -2,15 +2,15 @@ import * as React from 'react';
 import { useState } from 'react'
 import useForm from 'react-hook-form';
 import { useEffect } from 'react';
-import {  TextField,  MenuItem } from '@material-ui/core';
+import { TextField, MenuItem } from '@material-ui/core';
 import categoryHttp from '../../util/http/category-http';
 import genreHttp from '../../util/http/genre-http';
 import * as yup from '../../util/vendor/yup'
 import { useHistory, useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
-import {Category, Genre} from '../../util/models';    
+import { Category, Genre } from '../../util/models';
 import SubmmitActions from '../../components/SubmmitActions';
-
+import { DefaultForm } from '../../components/DefaultForm'
 
 const validationSchema = yup.object().shape({
     name: yup
@@ -27,18 +27,18 @@ const validationSchema = yup.object().shape({
 
 export const Form = () => {
 
-    const { register, handleSubmit, getValues, setValue, watch, errors, reset,triggerValidation } = useForm({
+    const { register, handleSubmit, getValues, setValue, watch, errors, reset, triggerValidation } = useForm({
         validationSchema,
         defaultValues: {
             categories_id: [] as any
         }
     });
 
-    
+
     const snackbar = useSnackbar();
     const history = useHistory();
     const { id }: any = useParams();
-    const [genre, setGenre] = useState <  Genre | null  > (null);
+    const [genre, setGenre] = useState < Genre | null > (null);
     const [categories, setCategories] = useState < Category[] > ([]);
     const [loading, setLoading] = useState < boolean > (false);
 
@@ -131,7 +131,8 @@ export const Form = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        
+        <DefaultForm onSubmit={handleSubmit(onSubmit)}>
             <TextField
                 name="name"
                 label="Nome"
@@ -177,7 +178,7 @@ export const Form = () => {
 
             <SubmmitActions disabledButtons={loading} handleSave={() => triggerValidation().then(isvalid => { isvalid && onSubmit(getValues(), null) })} />
 
-        </form>
+        </DefaultForm>
     );
 
 }

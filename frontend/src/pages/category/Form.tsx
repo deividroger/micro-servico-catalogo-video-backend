@@ -9,6 +9,7 @@ import { useHistory, useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 import { Category } from '../../util/models';
 import SubmmitActions from '../../components/SubmmitActions';
+import { DefaultForm } from '../../components/DefaultForm'
 
 
 const validationSchema = yup.object().shape({
@@ -110,7 +111,8 @@ export const Form = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} >
+
+        <DefaultForm onSubmit={handleSubmit(onSubmit)}>
 
             <TextField
                 name="name"
@@ -146,7 +148,6 @@ export const Form = () => {
                             () => setValue('is_active', !getValues()['is_active'])
                         }
                         checked={watch('is_active') as boolean}
-
                     />
                 }
                 label={"Ativo?"}
@@ -156,8 +157,7 @@ export const Form = () => {
 
             <SubmmitActions disabledButtons={loading} handleSave={() => triggerValidation().then(isvalid => { isvalid && onSubmit(getValues(), null) })} />
 
-        </form>
-
+        </DefaultForm>
     );
 };
 
