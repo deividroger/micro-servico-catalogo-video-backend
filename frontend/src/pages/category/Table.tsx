@@ -8,10 +8,14 @@ import { BadgeYes, BadgeNo } from '../../components/Badge';
 
 import { Category, ListResponse } from '../../util/models';
 
-import DefaultTable, { TableColumn } from '../../components/Table';
+import DefaultTable, { makeActionStyles, TableColumn } from '../../components/Table';
 
 import { useSnackbar } from 'notistack';
+import { IconButton, MuiThemeProvider } from '@material-ui/core';
 
+import { Link } from 'react-router-dom';
+import { MUIDataTableMeta } from 'mui-datatables';
+import  EditIcon  from '@material-ui/icons/Edit';
 
 const columnsDefinition: TableColumn[] = [
     {
@@ -50,9 +54,24 @@ const columnsDefinition: TableColumn[] = [
     {
         name: 'actions',
         label: 'Ações',
-        width: '13%'
+        width: '13%',
+        options: {
+            sort: false,
+            customBodyRender: (value, tableMeta: MUIDataTableMeta) => {
+                return (
+                    <IconButton
+                        color={'secondary'}
+                        component={Link}
+                        to={`/categories/${tableMeta.rowData[0]}/edit`}
+                    >
+                        <EditIcon fontSize={'inherit'} />
+                    </IconButton>
+                )
+            }
+        }
     }
 ];
+
 
 const Table = () => {
 
@@ -89,10 +108,17 @@ const Table = () => {
     }, []);
 
     return (
-        <DefaultTable
-            title=''
-            columns={columnsDefinition} data={data} loading={loading} />
+        <MuiThemeProvider theme={makeActionStyles(columnsDefinition.length - 1)}>
 
+            <DefaultTable
+                title=''
+                columns={columnsDefinition}
+                data={data}
+                loading={loading}
+                options={{ responsive: "scrollFullHeight" }}
+            />
+
+        </MuiThemeProvider>
 
     );
 };
