@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import format from 'date-fns/format';
 import parseIso from 'date-fns/parseISO';
@@ -15,7 +15,26 @@ import { IconButton, MuiThemeProvider } from '@material-ui/core';
 
 import { Link } from 'react-router-dom';
 import { MUIDataTableMeta } from 'mui-datatables';
-import  EditIcon  from '@material-ui/icons/Edit';
+import EditIcon from '@material-ui/icons/Edit';
+
+
+
+interface Pagination {
+    page: number;
+    total: number;
+    per_page: number;
+}
+
+interface Order {
+    sort: string | null;
+    dir: string | null;
+}
+
+interface SearchState {
+    search: string;
+    pagination: Pagination;
+    order: Order;
+}
 
 const columnsDefinition: TableColumn[] = [
     {
@@ -72,50 +91,142 @@ const columnsDefinition: TableColumn[] = [
     }
 ];
 
-
 const Table = () => {
 
     const [data, setData] = useState < Category[] > ([]);
     const [loading, setLoading] = useState < boolean > (false);
+    const [searchState, setSearchState] = useState < SearchState > ({
+        search: '', pagination: {
+            page: 1,
+            total: 0,
+            per_page: 10
+        },
+        order: {
+            sort: null,
+            dir: null,
+        }
+    });
 
     const snackBar = useSnackbar();
+    const subscribed = useRef(true);
 
     useEffect(() => {
-        let isSubscribed = true;
+        subscribed.current = true;
+        getData();
 
-        (async () => {
-            setLoading(true);
-            try {
-                if (isSubscribed) {
+        return () => {
+            subscribed.current = false;
+        };
 
-                    const { data } = await categoryHttp.list < ListResponse < Category >> ();
+    }, [
+        searchState.search,
+        searchState.pagination.page,
+        searchState.pagination.per_page,
+        searchState.order
+    ]);
 
-                    setData(data.data);
+    const columns = columnsDefinition.map(column => {
+        return column.name === searchState.order.sort
+            ?
+            {
+                ...column,
+                options: {
+                    ...column.options,
+                    sortDirection: searchState.order.dir as any
                 }
-            } catch (error) {
-                console.error(error);
-                snackBar.enqueueSnackbar("Não foi possível carregar as informações", {
-                    variant: 'error'
-                });
-            } finally {
-                setLoading(false);
+            }
+            : column;
+
+    });
+
+    async function getData() {
+
+        setLoading(true);
+
+        try {
+            const { data } = await categoryHttp.list < ListResponse < Category >> ({
+                queryParams: {
+                    search: searchState.search,
+                    page: searchState.pagination.page,
+                    per_page: searchState.pagination.per_page,
+                    sort: searchState.order.sort,
+                    dir: searchState.order.dir,
+                }
+            });
+
+            if (subscribed.current) {
+                setData(data.data);
+                setSearchState((prevState => ({
+                    ...prevState,
+                    pagination: {
+                        ...prevState.pagination,
+                        total: data.meta.total
+                    }
+                })))
+            }
+        } catch (error) {
+            console.error(error);
+
+            if (categoryHttp.isCacelledRequest(error)) {
+                return;
             }
 
-        })();
-        return () => {
-            isSubscribed = false;
-        };
-    }, []);
+            snackBar.enqueueSnackbar("Não foi possível carregar as informações", {
+                variant: 'error'
+            });
+        } finally {
+            setLoading(false);
+        }
+
+    }
 
     return (
         <MuiThemeProvider theme={makeActionStyles(columnsDefinition.length - 1)}>
 
             <DefaultTable
                 title=''
-                columns={columnsDefinition}
+                columns={columns}
                 data={data}
                 loading={loading}
-                options={{ responsive: "scrollFullHeight" }}
+
+                options={
+                    {
+                        serverSide: true,
+                        responsive: "scrollFullHeight",
+                        searchText: searchState.search,
+                        page: searchState.pagination.page - 1,
+                        rowsPerPage: searchState.pagination.per_page,
+                        count: searchState.pagination.total,
+                        onSearchChange: (value) => setSearchState((prevState => ({
+                            ...prevState,
+                            search: value
+                        }
+                        ))),
+                        onChangePage: (page) => setSearchState((prevState => ({
+                            ...prevState,
+                            pagination: {
+                                ...prevState.pagination,
+                                page: page + 1
+                            }
+                        }
+                        ))),
+                        onChangeRowsPerPage: (perPage) => setSearchState((prevState => ({
+                            ...prevState,
+                            pagination: {
+                                ...prevState.pagination,
+                                per_page: perPage
+                            }
+                        }
+                        ))),
+                        onColumnSortChange: (changedColumn, direction) => setSearchState((prevState => ({
+                            ...prevState,
+                            order: {
+                                sort: changedColumn,
+                                dir: direction.includes('desc') ? 'desc' : 'asc'
+                            }
+                        }
+                        )))
+                    }}
             />
 
         </MuiThemeProvider>

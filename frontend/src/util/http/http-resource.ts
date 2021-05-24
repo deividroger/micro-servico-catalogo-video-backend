@@ -1,33 +1,50 @@
-import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  CancelTokenSource,
+} from "axios";
+import axios from "axios";
+export default class HttpResource {
+  private cancelList: CancelTokenSource | null = null;
 
-export default class HttpResource{
+  constructor(protected http: AxiosInstance, protected resource) {}
 
-    constructor(protected http: AxiosInstance, protected resource){
-
+  list<T = any>(options?: { queryParams? }): Promise<AxiosResponse<T>> {
+    if (this.cancelList) {
+      this.cancelList.cancel("list request canceled");
     }
 
-    list<T = any>(): Promise<AxiosResponse<T>>{
-        const config:AxiosRequestConfig = {
-            params: {
-                all:''
-            }
-        }
-        return this.http.get<T>(this.resource,config);
+    this.cancelList = axios.CancelToken.source();
+
+    const config: AxiosRequestConfig = {
+      cancelToken: this.cancelList.token,
+    };
+
+    if (options && options.queryParams) {
+      config.params = options.queryParams;
     }
 
-    get<T = any> (id): Promise<AxiosResponse<T>>{
-        return this.http.get<T>(`${this.resource}/${id}`);
-    }
+    return this.http.get<T>(this.resource, config);
+  }
 
-    create<T = any>(data) : Promise<AxiosResponse<T>> {
-       return this.http.post<T>(this.resource,data);
-    }
+  get<T = any>(id): Promise<AxiosResponse<T>> {
+    return this.http.get<T>(`${this.resource}/${id}`);
+  }
 
-    update<T = any>(id,data) : Promise<AxiosResponse<T>>{
-        return this.http.put<T>(`${this.resource}/${id}`,data);
-    }
+  create<T = any>(data): Promise<AxiosResponse<T>> {
+    return this.http.post<T>(this.resource, data);
+  }
 
-    delete<T = any>(id): Promise<AxiosResponse<T>> {
-        return this.http.delete<T>(`${this.resource}/${id}`);
-    }
+  update<T = any>(id, data): Promise<AxiosResponse<T>> {
+    return this.http.put<T>(`${this.resource}/${id}`, data);
+  }
+
+  delete<T = any>(id): Promise<AxiosResponse<T>> {
+    return this.http.delete<T>(`${this.resource}/${id}`);
+  }
+
+  isCacelledRequest(error){
+    return axios.isCancel(error);
+  }
 }
