@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useReducer } from 'react';
 
 import format from 'date-fns/format';
 import parseIso from 'date-fns/parseISO';
@@ -17,25 +17,8 @@ import { Link } from 'react-router-dom';
 import { MUIDataTableMeta } from 'mui-datatables';
 import EditIcon from '@material-ui/icons/Edit';
 import { FilterResetButton } from '../../components/Table/FilterResetButton';
+import reducer, { INITIAL_STATE, Creators } from '../../store/search';
 
-
-
-interface Pagination {
-    page: number;
-    total: number;
-    per_page: number;
-}
-
-interface Order {
-    sort: string | null;
-    dir: string | null;
-}
-
-interface SearchState {
-    search: string;
-    pagination: Pagination;
-    order: Order;
-}
 
 const columnsDefinition: TableColumn[] = [
     {
@@ -94,25 +77,15 @@ const columnsDefinition: TableColumn[] = [
 
 const Table = () => {
 
-    const initialState = {
-        search: '',
-        pagination: {
-            page: 1,
-            total: 0,
-            per_page: 10
-        },
-        order: {
-            sort: null,
-            dir: null,
-        }
-    };
-
-    const [data, setData] = useState < Category[] > ([]);
-    const [loading, setLoading] = useState < boolean > (false);
-    const [searchState, setSearchState] = useState < SearchState > (initialState);
-
     const snackBar = useSnackbar();
     const subscribed = useRef(true);
+    
+    const [data, setData] = useState < Category[] > ([]);
+    const [loading, setLoading] = useState < boolean > (false);
+    const [totalRecords, setTotalRecords] = useState < number > (0);
+    const [searchState, dispatch] = useReducer(reducer, INITIAL_STATE);
+
+
 
     useEffect(() => {
         subscribed.current = true;
@@ -150,7 +123,7 @@ const Table = () => {
         try {
             const { data } = await categoryHttp.list < ListResponse < Category >> ({
                 queryParams: {
-                    search: cleanSearchText( searchState.search),
+                    search: cleanSearchText(searchState.search),
                     page: searchState.pagination.page,
                     per_page: searchState.pagination.per_page,
                     sort: searchState.order.sort,
@@ -160,13 +133,14 @@ const Table = () => {
 
             if (subscribed.current) {
                 setData(data.data);
-                setSearchState((prevState => ({
-                    ...prevState,
-                    pagination: {
-                        ...prevState.pagination,
-                        total: data.meta.total
-                    }
-                })))
+                setTotalRecords(data.meta.total);
+                // setSearchState((prevState => ({
+                //     ...prevState,
+                //     pagination: {
+                //         ...prevState.pagination,
+                //         total: data.meta.total
+                //     }
+                // })))
             }
         } catch (error) {
             console.error(error);
@@ -184,9 +158,9 @@ const Table = () => {
 
     }
 
-    function cleanSearchText (text){
+    function cleanSearchText(text) {
         let newText = text;
-        if (text && text.value !== undefined){
+        if (text && text.value !== undefined) {
             newText = text.value;
         }
         return newText;
@@ -200,59 +174,27 @@ const Table = () => {
                 columns={columns}
                 data={data}
                 loading={loading}
-                debouncedSearchTime = {500}
+                debouncedSearchTime={500}
                 options={
                     {
                         serverSide: true,
                         responsive: "scrollFullHeight",
-                        searchText: searchState.search,
+                        searchText: searchState.search as any,
                         page: searchState.pagination.page - 1,
                         rowsPerPage: searchState.pagination.per_page,
-                        count: searchState.pagination.total,
+                        count: totalRecords,
                         customToolbar: () => (
-                            <FilterResetButton handleClick={() => {
-                                setSearchState({
-                                    ...initialState,
-                                    search: {
-                                        value: initialState.search,
-                                        updated: true
-                                    } as any
-                                })
-                            }} />
+                            <FilterResetButton handleClick={() => dispatch(Creators.setReset())
+                            } />
                         ),
-                        onSearchChange: (value) => setSearchState((prevState => ({
-                            ...prevState,
-                            search: value,
-                            pagination: {
-                                ...prevState.pagination,
-                                page: 1
-                            }
-                        }
-                        ))),
-                        onChangePage: (page) => setSearchState((prevState => ({
-                            ...prevState,
-                            pagination: {
-                                ...prevState.pagination,
-                                page: page + 1
-                            }
-                        }
-                        ))),
-                        onChangeRowsPerPage: (perPage) => setSearchState((prevState => ({
-                            ...prevState,
-                            pagination: {
-                                ...prevState.pagination,
-                                per_page: perPage
-                            }
-                        }
-                        ))),
-                        onColumnSortChange: (changedColumn, direction) => setSearchState((prevState => ({
-                            ...prevState,
-                            order: {
+                        onSearchChange: (value) => dispatch(Creators.setSearch({ search: value })),
+                        onChangePage: (page) => dispatch(Creators.setPage({ page: page + 1 })),
+                        onChangeRowsPerPage: (perPage) => dispatch(Creators.setPerPage({ per_page: perPage })),
+                        onColumnSortChange: (changedColumn, direction) =>
+                            dispatch(Creators.setOrder({
                                 sort: changedColumn,
                                 dir: direction.includes('desc') ? 'desc' : 'asc'
-                            }
-                        }
-                        )))
+                            }))
                     }}
             />
 
