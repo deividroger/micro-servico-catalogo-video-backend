@@ -4,9 +4,8 @@ import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
 import IconButton from '@material-ui/core/IconButton';
 import ClearIcon from '@material-ui/icons/Clear';
-import { withStyles } from '@material-ui/core/styles';
-import {debounce} from 'lodash'
-
+import {withStyles} from '@material-ui/core/styles';
+import {debounce} from 'lodash';
 
 const defaultSearchStyles = theme => ({
     main: {
@@ -28,61 +27,55 @@ const defaultSearchStyles = theme => ({
     },
 });
 
+
 class DebouncedTableSearch extends React.PureComponent {
-    
+
     constructor(props) {
-        super(props)
-
-        const { searchText } = this.props;
+        super(props);
+        const {searchText} = this.props;
         let value = searchText;
-        
-        if (searchText && searchText.value !== undefined ) {
-            value = searchText.value
+        if (searchText && searchText.value !== undefined) {
+            value = searchText.value;
         }
-
         this.state = {
             text: value
-        }
-        this.deboucedOnSearch = debounce(this.deboucedOnSearch.bind(this),this.props.debounceTime);
+        };
+        this.debouncedOnSearch = debounce(this.debouncedOnSearch.bind(this), this.props.debounceTime);
     }
 
     handleTextChange = event => {
         const value = event.target.value;
+        console.log(value);
         this.setState({
             text: value
-        }, () =>  this.deboucedOnSearch(value))
+        }, () => this.debouncedOnSearch(value))
     };
 
-    deboucedOnSearch = value => {
+    debouncedOnSearch = value => {
         this.props.onSearch(value)
-    }
+    };
 
-    componentDidMount() {
-        document.addEventListener('keydown', this.onKeyDown, false);
-    }
-
-    componentDidUpdate(prevProps, prevState,snapshot){
-
-        const { searchText } = this.props;
-
-
-        if (searchText && searchText.value !== undefined 
-                      && prevProps.searchText !== this.props.searchText ) {
-            const value  = searchText.value;
-
-            if(value){
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const {searchText} = this.props;
+        if (searchText && searchText.value !== undefined && prevProps.searchText !== this.props.searchText) {
+            const value = searchText.value;
+            if (value) {
                 this.setState({
                     text: value
-                }, ()=> this.props.onSearch(value));
-            }else{
-                try{
-                    this.props.onHide();
-                }catch(e){
+                }, () => this.props.onSearch(value))
+            } else {
+                try {
+                    this.props.onHide()
+                } catch (e) {
 
                 }
             }
-
         }
+    }
+
+
+    componentDidMount() {
+        document.addEventListener('keydown', this.onKeyDown, false);
     }
 
     componentWillUnmount() {
@@ -96,14 +89,13 @@ class DebouncedTableSearch extends React.PureComponent {
     };
 
     render() {
-        const { classes, options, onHide, searchText } = this.props;
-
+        const {classes, options, onHide} = this.props;
         let value = this.state.text;
-
+        console.log(value);
         return (
             <Grow appear in={true} timeout={300}>
                 <div className={classes.main} ref={el => (this.rootRef = el)}>
-                    <SearchIcon className={classes.searchIcon} />
+                    <SearchIcon className={classes.searchIcon}/>
                     <TextField
                         className={classes.searchText}
                         autoFocus={true}
@@ -118,7 +110,7 @@ class DebouncedTableSearch extends React.PureComponent {
                         placeholder={options.searchPlaceholder}
                     />
                     <IconButton className={classes.clearIcon} onClick={onHide}>
-                        <ClearIcon />
+                        <ClearIcon/>
                     </IconButton>
                 </div>
             </Grow>
@@ -126,4 +118,4 @@ class DebouncedTableSearch extends React.PureComponent {
     }
 }
 
-export default withStyles(defaultSearchStyles, { name: 'MUIDataTableSearch' })(DebouncedTableSearch);
+export default withStyles(defaultSearchStyles, {name: 'MUIDataTableSearch'})(DebouncedTableSearch);
