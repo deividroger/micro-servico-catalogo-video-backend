@@ -1,5 +1,6 @@
 import { RouteProps } from 'react-router-dom'
 import { categoryRoutes } from './categoryRoutes';
+import { videosRoutes } from './videoRoutes';
 import { genresRoutes } from './genresRoutes';
 import { castMembersRoutes } from './castMembersRoutes';
 import { dashboardRoutes } from './dashboardRoutes';
@@ -18,6 +19,8 @@ const routes: MyRouteProps[] = [
     ...genresRoutes
     ,
     ...castMembersRoutes
+    ,
+    ...videosRoutes
 
 ];
 

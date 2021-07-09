@@ -2,9 +2,9 @@ import * as React from 'react';
 import {useEffect, useReducer, useRef, useState} from "react";
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
-import categoryHttp from "../../util/http/category-http";
+import videoHttp from "../../util/http/video-http";
 import {BadgeNo, BadgeYes} from "../../components/Badge";
-import {Category, ListResponse} from "../../util/models";
+import {Video, ListResponse} from "../../util/models";
 import DefaultTable, {makeActionStyles, TableColumn, MuiDataTableRefComponent} from '../../components/Table';
 import {useSnackbar} from "notistack";
 import {IconButton, MuiThemeProvider, Theme} from "@material-ui/core";
@@ -25,26 +25,12 @@ const columnsDefinition: TableColumn[] = [
         }
     },
     {
-        name: "name",
-        label: "Nome",
+        name: "title",
+        label: "Título",
         width: '43%',
         options: {
             filter: false
         }
-    },
-    {
-        name: "is_active",
-        label: "Ativo?",
-        width: '4%',
-        options: {
-            filter: true,
-            filterOptions: {
-              names: ['Sim', 'Não']
-            },
-            customBodyRender(value, tableMeta, updateValue) {
-                return value ? <BadgeYes/> : <BadgeNo/>;
-            }
-        },
     },
     {
         name: "created_at",
@@ -69,7 +55,7 @@ const columnsDefinition: TableColumn[] = [
                     <IconButton
                         color={'secondary'}
                         component={Link}
-                        to={`/categories/${tableMeta.rowData[0]}/edit`}
+                        to={`/videos/${tableMeta.rowData[0]}/edit`}
                     >
                         <EditIcon/>
                     </IconButton>
@@ -86,10 +72,9 @@ const rowsPerPageOptions = [15, 25, 50];
 const Table = () => {
     const snackbar = useSnackbar();
     const subscribed = useRef(true);
-    const [data, setData] = useState<Category[]>([]);
+    const [data, setData] = useState<Video[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const tableRef = useRef() as React.MutableRefObject<MuiDataTableRefComponent>;
-
     const {
         columns,
         filterManager,
@@ -123,7 +108,7 @@ const Table = () => {
     async function getData() {
         setLoading(true);
         try {
-            const {data} = await categoryHttp.list<ListResponse<Category>>({
+            const {data} = await videoHttp.list<ListResponse<Video>>({
                 queryParams: {
                     search: filterManager.cleanSearchText(debouncedFilterState.search),
                     page: debouncedFilterState.pagination.page,
@@ -138,7 +123,7 @@ const Table = () => {
             }
         } catch (error) {
             console.error(error);
-            if (categoryHttp.isCancelledRequest(error)) {
+            if (videoHttp.isCancelledRequest(error)) {
                 return;
             }
             snackbar.enqueueSnackbar(
@@ -178,7 +163,6 @@ const Table = () => {
                     onChangeRowsPerPage: (perPage) => filterManager.changeRowsPerPage(perPage),
                     onColumnSortChange: (changedColumn: string, direction: string) =>
                         filterManager.changeColumnSort(changedColumn, direction)
-                    
                 }}
             />
         </MuiThemeProvider>
