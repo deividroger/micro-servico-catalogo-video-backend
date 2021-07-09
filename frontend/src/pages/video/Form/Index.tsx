@@ -6,6 +6,7 @@ import {
     Grid,
     TextField,
     Typography,
+    useTheme,
 
 
 } from "@material-ui/core";
@@ -23,6 +24,7 @@ import videoHttp from "../../../util/http/video-http";
 import * as yup from '../../../util/vendor/yup';
 import { Video, VideoFileFieldsMap } from "../../../util/models";
 import { RatingField } from './RatingField';
+import { useMediaQuery } from '@material-ui/core';
 
 const validationSchema = yup.object().shape({
     title: yup.string()
@@ -75,6 +77,10 @@ export const Form = () => {
     const { id }: any = useParams();
     const [video, setVideo] = useState < Video | null > (null);
     const [loading, setLoading] = useState < boolean > (false);
+
+    const theme = useTheme();
+    const isGreaterMd = useMediaQuery(theme.breakpoints.up('md'));
+
 
     useEffect(() => {
         ['rating', 'opened'].forEach(name => register({ name }));
@@ -214,6 +220,9 @@ export const Form = () => {
                         setValue={(value) => setValue('rating', value, true)}
                         error={errors.rating}
                         disabled={loading}
+                        FormControlProps={{
+                            margin: isGreaterMd? 'none' : 'normal'
+                        }}
                     />
                     <br />
                     Uploads
