@@ -29,6 +29,8 @@ import { Video, VideoFileFieldsMap } from "../../../util/models";
 import { RatingField } from './RatingField';
 import { UploadField } from './UploadField'
 import { useMediaQuery } from '@material-ui/core';
+import AsyncAutoComplete from '../../../components/AsyncAutoComplete';
+import genreHttp from '../../../util/http/genre-http';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
@@ -96,7 +98,7 @@ export const Form = () => {
 
 
     useEffect(() => {
-        ['rating', 'opened',...fileFields].forEach(name => register({ name }));
+        ['rating', 'opened', ...fileFields].forEach(name => register({ name }));
     }, [register])
 
 
@@ -157,6 +159,16 @@ export const Form = () => {
             setLoading(false);
         }
     }
+
+    const fetchOptions = (searchText) => genreHttp.list(
+        {
+            queryParams: {
+                search: searchText,
+                all: ""
+            }
+        }
+    ).then(({ data }) => data.data)
+
 
     return (
         <DefaultForm
@@ -224,7 +236,16 @@ export const Form = () => {
                     </Grid>
                     Elenco
                     <br />
-                    Gêneros e categorias
+                    <AsyncAutoComplete 
+                    fetchOptions={fetchOptions} 
+                    AutocompleteProps= {{
+                        freeSolo: true,
+                        getOptionLabel: option => option.name
+                    }}
+                    TextFieldsProps={{
+                        label: 'Gêneros'
+                    }}
+                    />
 
                 </Grid>
                 <Grid item xs={12} md={6}>

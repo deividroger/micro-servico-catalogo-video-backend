@@ -32,6 +32,7 @@ export const SnackbarProvider: React.FC<SnackbarProviderProps> = (props) => {
             vertical: "top"
         },
         ref:(el) => snackbarProviderRef =el,
+        preventDuplicate:true,
         action: (key) => (
             <IconButton color={"inherit"}
                         style={{fontSize: 20}}
