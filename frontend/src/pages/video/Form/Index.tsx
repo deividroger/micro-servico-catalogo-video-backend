@@ -14,7 +14,8 @@ import {
     Theme
 
 } from "@material-ui/core";
-import useForm from "react-hook-form";
+
+import {useForm} from "react-hook-form";
 
 
 import { useEffect, useState } from "react";
@@ -29,8 +30,10 @@ import { Video, VideoFileFieldsMap } from "../../../util/models";
 import { RatingField } from './RatingField';
 import { UploadField } from './UploadField'
 import { useMediaQuery } from '@material-ui/core';
-import AsyncAutoComplete from '../../../components/AsyncAutoComplete';
-import genreHttp from '../../../util/http/genre-http';
+import GenreField from './GenreField';
+import CategoryField from './CategoryField';
+
+
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
@@ -79,10 +82,24 @@ export const Form = () => {
         reset,
         watch,
         triggerValidation
-    } = useForm({
+    } = useForm < {
+        title,
+        description,
+        year_launched,
+        duration,
+        thumb_file,
+        banner_file,
+        trailer_file,
+        video_file,
+        opened,
+        genres,
+        rating,
+
+    } > ({
         validationSchema,
         defaultValues: {
-
+            genres: [],
+            opened: false
         }
     });
 
@@ -95,7 +112,7 @@ export const Form = () => {
 
     const theme = useTheme();
     const isGreaterMd = useMediaQuery(theme.breakpoints.up('md'));
-
+    
 
     useEffect(() => {
         ['rating', 'opened', ...fileFields].forEach(name => register({ name }));
@@ -159,16 +176,6 @@ export const Form = () => {
             setLoading(false);
         }
     }
-
-    const fetchOptions = (searchText) => genreHttp.list(
-        {
-            queryParams: {
-                search: searchText,
-                all: ""
-            }
-        }
-    ).then(({ data }) => data.data)
-
 
     return (
         <DefaultForm
@@ -236,16 +243,18 @@ export const Form = () => {
                     </Grid>
                     Elenco
                     <br />
-                    <AsyncAutoComplete 
-                    fetchOptions={fetchOptions} 
-                    AutocompleteProps= {{
-                        freeSolo: true,
-                        getOptionLabel: option => option.name
-                    }}
-                    TextFieldsProps={{
-                        label: 'Gêneros'
-                    }}
-                    />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} md={6}>
+                            <GenreField
+                                genres={watch('genres')}
+                                setGenres={(value) => setValue('genres', value, true)}
+                            />
+
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <CategoryField />
+                        </Grid>
+                    </Grid>
 
                 </Grid>
                 <Grid item xs={12} md={6}>

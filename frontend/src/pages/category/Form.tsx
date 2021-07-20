@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { TextField, Checkbox, FormControlLabel } from '@material-ui/core'
 
-import useForm from 'react-hook-form';
+import {useForm} from "react-hook-form";
 import categoryHttp from '../../util/http/category-http';
 import * as yup from '../../util/vendor/yup'
 import { useHistory, useParams } from 'react-router';
@@ -23,7 +23,9 @@ const validationSchema = yup.object().shape({
 
 export const Form = () => {
 
-    const { register, handleSubmit, getValues, setValue, errors, reset, watch, triggerValidation } = useForm({
+    const { register, handleSubmit, getValues, setValue, errors, reset, watch, triggerValidation } = useForm<{
+        name,is_active
+    }>({
 
         validationSchema: validationSchema,
         defaultValues: {
@@ -109,6 +111,7 @@ export const Form = () => {
             setLoding(false);
         }
     }
+    
 
     return (
 

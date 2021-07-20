@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react'
-import useForm from 'react-hook-form';
+import {useForm} from "react-hook-form";
 import { useEffect } from 'react';
 import { TextField, MenuItem } from '@material-ui/core';
 import categoryHttp from '../../util/http/category-http';
@@ -27,7 +27,10 @@ const validationSchema = yup.object().shape({
 
 export const Form = () => {
 
-    const { register, handleSubmit, getValues, setValue, watch, errors, reset, triggerValidation } = useForm({
+    const { register, handleSubmit, getValues, setValue, watch, errors, reset, triggerValidation } = useForm<{
+        name,
+        categories_id
+    }>({
         validationSchema,
         defaultValues: {
             categories_id: [] as any
