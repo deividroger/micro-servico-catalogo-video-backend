@@ -6,18 +6,18 @@ import { GridProps } from '@material-ui/core/Grid'
 
 
 interface GridSelectedItemProps extends GridProps {
-    onClick: () => void
+    onDelete: () => void
 
 }
 
 export const GridSelectedItem: React.FC<GridSelectedItemProps> = (props) => {
-    const { onClick, children, ...other } = props;
+    const { onDelete, children, ...other } = props;
 
     return (
         <Grid item {...other}>
             <Grid container alignItems={"center"} spacing={3}>
                 <Grid item xs={1}>
-                    <IconButton size={"small"} color={"inherit"} onClick={onClick}>
+                    <IconButton size={"small"} color={"inherit"} onClick={onDelete}>
                         <DeleteIcon />
                     </IconButton>
                 </Grid>

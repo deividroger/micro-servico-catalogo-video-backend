@@ -151,7 +151,6 @@ export const Form = () => {
         return () => {
             isSubscribed = false;
         }
-
     }, []);
 
     async function onSubmit(formData, event) {
@@ -256,6 +255,8 @@ export const Form = () => {
                                 disabled={loading}
                                 genres={watch('genres')}
                                 setGenres={(value) => setValue('genres', value, true)}
+                                setCategories={(value) => setValue('categories', value, true)}
+                                categories={watch('categories')}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -265,7 +266,7 @@ export const Form = () => {
                                 categories={watch('categories')}
                                 setCategories={(value) => setValue('categories', value, true)}
                                 genres={watch('genres')}
-                                
+
                             />
                         </Grid>
 
