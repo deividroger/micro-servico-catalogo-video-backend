@@ -1,17 +1,17 @@
 import * as React from 'react';
-import {useEffect, useReducer, useRef, useState} from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
 import videoHttp from "../../util/http/video-http";
-import {BadgeNo, BadgeYes} from "../../components/Badge";
-import {Video, ListResponse} from "../../util/models";
-import DefaultTable, {makeActionStyles, TableColumn, MuiDataTableRefComponent} from '../../components/Table';
-import {useSnackbar} from "notistack";
-import {IconButton, MuiThemeProvider, Theme} from "@material-ui/core";
-import {Link} from "react-router-dom";
+import { BadgeNo, BadgeYes } from "../../components/Badge";
+import { Video, ListResponse } from "../../util/models";
+import DefaultTable, { makeActionStyles, TableColumn, MuiDataTableRefComponent } from '../../components/Table';
+import { useSnackbar } from "notistack";
+import { IconButton, MuiThemeProvider, Theme } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import EditIcon from '@material-ui/icons/Edit';
-import {FilterResetButton} from "../../components/Table/FilterResetButton";
-import reducer, {INITIAL_STATE, Creators} from "../../store/filter";
+import { FilterResetButton } from "../../components/Table/FilterResetButton";
+import reducer, { INITIAL_STATE, Creators } from "../../store/filter";
 import useFilter from "../../hooks/useFilter";
 
 const columnsDefinition: TableColumn[] = [
@@ -31,7 +31,31 @@ const columnsDefinition: TableColumn[] = [
         options: {
             filter: false
         }
-    },
+        ,
+    }, {
+        name: "genres",
+        label: "Gêneros",
+        width: '13%',
+        options: {
+            sort: false,
+            filter: false,
+            customBodyRender: (value, updateValue) => {
+                return value.map(v => v.name).join(', ');
+            }
+        }
+    }, {
+        name: "categories",
+        label: "Categorias",
+        width: '12%',
+        options: {
+            sort: false,
+            filter: false,
+            customBodyRender: (value, updateValue) => {
+                return value.map(v => v.name).join(', ');
+            }
+        }
+    }
+    ,
     {
         name: "created_at",
         label: "Criado em",
@@ -57,7 +81,7 @@ const columnsDefinition: TableColumn[] = [
                         component={Link}
                         to={`/videos/${tableMeta.rowData[0]}/edit`}
                     >
-                        <EditIcon/>
+                        <EditIcon />
                     </IconButton>
                 )
             }
@@ -72,8 +96,8 @@ const rowsPerPageOptions = [15, 25, 50];
 const Table = () => {
     const snackbar = useSnackbar();
     const subscribed = useRef(true);
-    const [data, setData] = useState<Video[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [data, setData] = useState < Video[] > ([]);
+    const [loading, setLoading] = useState < boolean > (false);
     const tableRef = useRef() as React.MutableRefObject<MuiDataTableRefComponent>;
     const {
         columns,
@@ -108,7 +132,7 @@ const Table = () => {
     async function getData() {
         setLoading(true);
         try {
-            const {data} = await videoHttp.list<ListResponse<Video>>({
+            const { data } = await videoHttp.list < ListResponse < Video >> ({
                 queryParams: {
                     search: filterManager.cleanSearchText(debouncedFilterState.search),
                     page: debouncedFilterState.pagination.page,
@@ -128,7 +152,7 @@ const Table = () => {
             }
             snackbar.enqueueSnackbar(
                 'Não foi possível carregar as informações',
-                {variant: 'error',}
+                { variant: 'error', }
             )
         } finally {
             setLoading(false);

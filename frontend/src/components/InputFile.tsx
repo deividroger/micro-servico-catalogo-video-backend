@@ -1,12 +1,11 @@
 // @flow
 import * as React from 'react';
-import { useRef, useState, MutableRefObject } from 'react'
+import {MutableRefObject, useImperativeHandle, useRef, useState, RefAttributes} from "react";
 import {  InputAdornment, TextField } from '@material-ui/core';
 import { TextFieldProps } from "@material-ui/core/TextField";
-import { useImperativeHandle } from 'react';
 
 
-export interface InputFileProps {
+export interface InputFileProps extends RefAttributes<InputFileComponent> {
     ButtonFile: React.ReactNode;
     InputFileProps?: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
     TextFieldProps?: TextFieldProps;
@@ -14,6 +13,8 @@ export interface InputFileProps {
 
 export interface InputFileComponent{
     openWindow: () => void
+    clear: () => void
+
 }
 
 
@@ -58,8 +59,10 @@ const InputFile = React.forwardRef<InputFileComponent, InputFileProps>((props, r
         }
     };
 
-    useImperativeHandle(ref,()=>({
-        openWindow: ()=> fileRef.current.click()
+
+    useImperativeHandle(ref, () => ({
+        openWindow: () => fileRef.current.click(),
+        clear: () => setFilename("")
     }));
 
     return (
