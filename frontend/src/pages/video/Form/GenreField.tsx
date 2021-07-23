@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Typography } from '@material-ui/core'
+import { FormControl, FormControlProps, FormHelperText, Typography } from '@material-ui/core'
 import AsyncAutoComplete from '../../../components/AsyncAutoComplete';
 import GridSelected from "../../../components/GridSelected";
 import GridSelectedItem from "../../../components/GridSelectedItem";
@@ -12,19 +12,20 @@ import useCollectionManager from '../../../hooks/useCollectionManager';
 
 interface GenreFieldProps {
     genres: any[],
-    setGenres: (genres) => void
-    
+    setGenres: (genres) => void,
+    error: any,
+    disabled?: boolean,
+    FormControlProps?: FormControlProps;
+
 }
 
 const GenreField: React.FC<GenreFieldProps> = (props) => {
 
-    const { genres, setGenres } = props;
+    const { genres, setGenres, error, disabled } = props;
     const autocompleteHttp = useHttpHandled();
-    
-    
-    const {addItem, removeItem} = useCollectionManager(genres, setGenres);
 
-    
+
+    const { addItem, removeItem } = useCollectionManager(genres, setGenres);
 
     function fetchOptions(searchText) {
         return autocompleteHttp(
@@ -37,42 +38,53 @@ const GenreField: React.FC<GenreFieldProps> = (props) => {
                     }
                 }
             )
-        ).then(data => data.data).catch(error => console.log(error));
+        ).then(data => data.data);
     }
 
     return (
 
         <>
-
             <AsyncAutoComplete
                 fetchOptions={fetchOptions}
                 AutocompleteProps={{
+                    // autoSelect: true,
+                    getOptionSelected: (option, value) => option.id === value.id,
+                    clearOnEscape: true,
                     freeSolo: true,
                     getOptionLabel: option => option.name,
-                    onChange: (event, value) => addItem(value)
+                    onChange: (event, value) => addItem(value),
+                    disabled: disabled
                 }}
                 TextFieldsProps={{
-                    label: 'Gêneros'
+                    label: 'Gêneros',
+                    error: error !== undefined
                 }}
             />
-
-
-
-            <GridSelected>
-                
-                    {genres.map((genre, key) => 
+            <FormControl
+                error={error !== undefined}
+                disabled={disabled === true}
+                {...props.FormControlProps}
+                fullWidth
+                margin={"normal"}
+            >
+                <GridSelected>
+                    {
+                        genres.map((genre, key) =>
                         (<GridSelectedItem key={key} xs={12} onClick={() => { console.log('clicou'); }}>
-                           
-                             <Typography noWrap={true} >
-                                    {genre.name}  1
-                                </Typography> 
-                        </GridSelectedItem>
-                        ))}
-                    
-                
 
-            </GridSelected>
-            
+                            <Typography noWrap={true} >
+                                {genre.name}
+                            </Typography>
+                        </GridSelectedItem>
+                        ))
+                    }
+                </GridSelected>
+                {
+                    error && <FormHelperText> {error.message} </FormHelperText>
+                }
+
+            </FormControl>
+
         </>
     );
 };

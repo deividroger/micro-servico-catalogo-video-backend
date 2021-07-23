@@ -15,7 +15,7 @@ import {
 
 } from "@material-ui/core";
 
-import {useForm} from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 
 import { useEffect, useState } from "react";
@@ -32,6 +32,7 @@ import { UploadField } from './UploadField'
 import { useMediaQuery } from '@material-ui/core';
 import GenreField from './GenreField';
 import CategoryField from './CategoryField';
+import { FormHelperText } from '@material-ui/core';
 
 
 
@@ -94,11 +95,12 @@ export const Form = () => {
         opened,
         genres,
         rating,
-
+        categories,
     } > ({
         validationSchema,
         defaultValues: {
             genres: [],
+            categories: [],
             opened: false
         }
     });
@@ -112,10 +114,14 @@ export const Form = () => {
 
     const theme = useTheme();
     const isGreaterMd = useMediaQuery(theme.breakpoints.up('md'));
-    
+
 
     useEffect(() => {
-        ['rating', 'opened', ...fileFields].forEach(name => register({ name }));
+        ['rating',
+            'opened',
+            'genres',
+            'categories',
+            ...fileFields].forEach(name => register({ name }));
     }, [register])
 
 
@@ -246,14 +252,32 @@ export const Form = () => {
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                             <GenreField
+                                error={errors.genres}
+                                disabled={loading}
                                 genres={watch('genres')}
                                 setGenres={(value) => setValue('genres', value, true)}
                             />
-
                         </Grid>
                         <Grid item xs={12} md={6}>
-                            <CategoryField />
+                            <CategoryField
+                                error={errors.categories}
+                                disabled={loading}
+                                categories={watch('categories')}
+                                setCategories={(value) => setValue('categories', value, true)}
+                                genres={watch('genres')}
+                                
+                            />
                         </Grid>
+
+                        <Grid item xs={12}>
+                            <FormHelperText>
+                                Escolha os gêneros dos vídeos
+                            </FormHelperText>
+                            <FormHelperText>
+                                Escolha pelo menos uma categoria de cada gênero
+                            </FormHelperText>
+                        </Grid>
+
                     </Grid>
 
                 </Grid>
