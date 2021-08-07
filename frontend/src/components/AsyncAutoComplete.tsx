@@ -41,11 +41,11 @@ const AsyncAutocomplete = React.forwardRef<AsyncAutocompleteComponent, AsyncAuto
   const autoCompleteProps: AutocompleteProps<any> = {
     ...(AutocompleteProps && { ...AutocompleteProps }),
     open,
-
     loading: loading,
     options,
     loadingText: 'Carregando...',
     noOptionsText: 'Nenhum item encontrado',
+    inputValue: searchText,
     onOpen() {
       setOpen(true);
       onOpen && onOpen();

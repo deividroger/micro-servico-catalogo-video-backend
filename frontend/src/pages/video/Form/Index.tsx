@@ -17,7 +17,7 @@ import {
 
 import { useForm } from "react-hook-form";
 
-import { useEffect, useState, useRef,MutableRefObject,createRef } from "react";
+import { useEffect, useState, useRef, MutableRefObject, createRef } from "react";
 import { useParams, useHistory } from "react-router";
 import { useSnackbar } from "notistack";
 
@@ -27,7 +27,7 @@ import videoHttp from "../../../util/http/video-http";
 import * as yup from '../../../util/vendor/yup';
 import { Video, VideoFileFieldsMap } from "../../../util/models";
 import { RatingField } from './RatingField';
-import  UploadField  from './UploadField'
+import UploadField from './UploadField'
 import { useMediaQuery } from '@material-ui/core';
 
 import GenreField, { GenreFieldComponent } from "./GenreField";
@@ -38,6 +38,7 @@ import { InputFileComponent } from "../../../components/InputFile";
 
 import { FormHelperText } from '@material-ui/core';
 
+import {useSnackbarFormError} from '../../../hooks/useSnackbarFormError'
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
@@ -105,7 +106,8 @@ export const Form = () => {
         errors,
         reset,
         watch,
-        triggerValidation
+        triggerValidation,
+        formState
     } = useForm < {
         title,
         description,
@@ -131,6 +133,8 @@ export const Form = () => {
         }
     });
 
+    
+
     const snackbar = useSnackbar();
     const classes = useStyles();
     const history = useHistory();
@@ -147,6 +151,13 @@ export const Form = () => {
     const uploadsRef = useRef(
         zipObject(fileFields, fileFields.map(() => createRef()))
     ) as MutableRefObject<{ [key: string]: MutableRefObject<InputFileComponent> }>;
+
+
+    useSnackbarFormError(formState.submitCount,errors);
+
+    useEffect(()=>{
+
+    },[formState.submitCount] )
 
     useEffect(() => {
         ['rating',
@@ -230,7 +241,7 @@ export const Form = () => {
         castMemberRef.current.clear();
         genreRef.current.clear();
         categoryRef.current.clear();
-        reset(data);
+         //reset(data);
     }
 
     return (
