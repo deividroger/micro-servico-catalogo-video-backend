@@ -6,7 +6,8 @@
 ### FRONT-END
 
 # npm config set cache /var/www/.npm-cache --global
-# cd /var/www/frontend && npm install && cd ..
+
+cd /var/www/frontend && npm install && cd ..
 
 
 ### BACK-END

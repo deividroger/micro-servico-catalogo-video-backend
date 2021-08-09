@@ -38,7 +38,7 @@ import { InputFileComponent } from "../../../components/InputFile";
 
 import { FormHelperText } from '@material-ui/core';
 
-import {useSnackbarFormError} from '../../../hooks/useSnackbarFormError'
+import useSnackbarFormError from '../../../hooks/useSnackbarFormError'
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
