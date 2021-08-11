@@ -11,7 +11,8 @@ steps:
           - --keyring=testing-lesson
           - --key=service-account
     - id: "Excluindo pasta db_data"
-      name: 'bash'
+      name: 'gcr.io/cloud-builders/gcloud'
+      entrypoint: 'bash'
       args:
           - cd 'docker' &&
           - rm -rf dbdata &&
