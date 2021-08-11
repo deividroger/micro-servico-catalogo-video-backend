@@ -36,7 +36,7 @@ services:
 
     db:
         build: ./.docker/mysql
-        #command: --innodb-use-native-aio=0
+        command: --innodb-use-native-aio=0
         container_name: db
         restart: always
         tty: true
