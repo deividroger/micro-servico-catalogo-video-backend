@@ -10,7 +10,7 @@ steps:
           - --location=global
           - --keyring=testing-lesson
           - --key=service-account
-     -id: "Excluindo pasta db_data"
+    - id: "Excluindo pasta db_data"
       name: 'bash'
       args:
           - cd 'docker' &&
