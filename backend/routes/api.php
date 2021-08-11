@@ -24,7 +24,14 @@ Route::group(['namespace'=>'Api'],function(){
     ];
 
     Route::resource('categories', 'CategoryController',$exceptCreateAndEdit);
+    Route::delete('categories', 'CategoryController@destroyCollection');
+
     Route::resource('genres', 'GenreController',$exceptCreateAndEdit);
+    Route::delete('genres', 'genres@destroyCollection');
+
     Route::resource('cast_members', 'CastMemberController',$exceptCreateAndEdit);
+    Route::delete('cast_members', 'cast_members@destroyCollection');
+
     Route::resource('videos', 'VideoController',$exceptCreateAndEdit);
+    Route::delete('videos', 'videos@destroyCollection');
 });
