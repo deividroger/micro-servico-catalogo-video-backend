@@ -14,8 +14,8 @@ steps:
       name: 'gcr.io/cloud-builders/gcloud'
       entrypoint: 'bash'
       args:
-          - cd '.docker' &&
-          - rm -rf dbdata &&
+          - cd '.docker'
+          - rm -rf dbdata
           - cd ..
 
     - id: "Rodando docker-compose"
