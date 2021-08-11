@@ -10,13 +10,6 @@ steps:
           - --location=global
           - --keyring=testing-lesson
           - --key=service-account
-    - id: "Excluindo pasta db_data"
-      name: 'gcr.io/cloud-builders/gcloud'
-      entrypoint: 'bash'
-      args:
-          - cd '.docker'
-          - rm -rf dbdata
-          - cd ..
 
     - id: "Rodando docker-compose"
       name: 'gcr.io/$PROJECT_ID/docker-compose:1.25.5'
@@ -34,7 +27,7 @@ steps:
 
     - id: "Rodando docker ps"
       name: 'gcr.io/cloud-builders/docker'
-      args: ['ps']
+      args: ['start','db']
 
     - id: "Rodando composer"
       name: 'gcr.io/cloud-builders/docker'
