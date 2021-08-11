@@ -14,7 +14,7 @@ steps:
       name: 'gcr.io/cloud-builders/gcloud'
       entrypoint: 'bash'
       args:
-          - cd 'docker' &&
+          - cd '.docker' &&
           - rm -rf dbdata &&
           - cd ..
 
