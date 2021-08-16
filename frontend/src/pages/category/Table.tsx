@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useReducer, useRef, useState} from "react";
+import {useEffect, useRef, useState, useContext} from "react";
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
 import categoryHttp from "../../util/http/category-http";
@@ -11,8 +11,9 @@ import {IconButton, MuiThemeProvider, Theme} from "@material-ui/core";
 import {Link} from "react-router-dom";
 import EditIcon from '@material-ui/icons/Edit';
 import {FilterResetButton} from "../../components/Table/FilterResetButton";
-import reducer, {INITIAL_STATE, Creators} from "../../store/filter";
+
 import useFilter from "../../hooks/useFilter";
+import LoadingContext from '../../components/loading/LoadingContext';
 
 const columnsDefinition: TableColumn[] = [
     {
@@ -87,7 +88,7 @@ const Table = () => {
     const snackbar = useSnackbar();
     const subscribed = useRef(true);
     const [data, setData] = useState<Category[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const loading = useContext(LoadingContext);
     const tableRef = useRef() as React.MutableRefObject<MuiDataTableRefComponent>;
 
     const {
@@ -121,7 +122,7 @@ const Table = () => {
     ]);
 
     async function getData() {
-        setLoading(true);
+       
         try {
             const {data} = await categoryHttp.list<ListResponse<Category>>({
                 queryParams: {
@@ -145,9 +146,7 @@ const Table = () => {
                 'Não foi possível carregar as informações',
                 {variant: 'error',}
             )
-        } finally {
-            setLoading(false);
-        }
+        } 
     }
 
 

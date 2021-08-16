@@ -7,25 +7,31 @@ import { Navbar } from './components/Navbar';
 import AppRouter from './routes/AppRouter';
 import theme from './theme';
 import SnackbarProvider from './components/SnackbarProvider'
+import Spinner from './components/Spinner';
+
+import { LoadingProvider } from './components/loading/LoadingProvider';
 
 const App: React.FC = () => {
   return (
-
-    <MuiThemeProvider theme={theme}>
-      <SnackbarProvider>
-        <React.Fragment>
-          <CssBaseline />
-          <BrowserRouter>
-            <Navbar />
-            <Box paddingTop={'70px'}>
-              <Breadcrumbs />
-              <AppRouter />
-            </Box>
-          </BrowserRouter>
-        </React.Fragment>
-      </SnackbarProvider >
-    </MuiThemeProvider>
-
+    <React.Fragment>
+      <LoadingProvider>
+        <MuiThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <React.Fragment>
+              <CssBaseline />
+              <BrowserRouter>
+                <Spinner />
+                <Navbar />
+                <Box paddingTop={'70px'}>
+                  <Breadcrumbs />
+                  <AppRouter />
+                </Box>
+              </BrowserRouter>
+            </React.Fragment>
+          </SnackbarProvider >
+        </MuiThemeProvider>
+      </LoadingProvider>
+    </React.Fragment>
   );
 }
 

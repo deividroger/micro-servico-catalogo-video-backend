@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState,useContext } from 'react'
 import { TextField, Checkbox, FormControlLabel } from '@material-ui/core'
 
 import {useForm} from "react-hook-form";
@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import { Category } from '../../util/models';
 import SubmmitActions from '../../components/SubmmitActions';
 import { DefaultForm } from '../../components/DefaultForm'
+import LoadingContext from '../../components/loading/LoadingContext';
 
 
 const validationSchema = yup.object().shape({
@@ -37,7 +38,8 @@ export const Form = () => {
     const { id }: any = useParams();
     const history = useHistory();
     const [category, setCategory] = useState < Category | null > (null);
-    const [loading, setLoding] = useState < boolean > (false);
+    
+    const loading = useContext(LoadingContext);
 
     useEffect(() => {
 
@@ -50,7 +52,7 @@ export const Form = () => {
         if (isSubscribed) {
 
             (async () => {
-                setLoding(true);
+                
                 try {
                     const { data } = await categoryHttp.get(id);
                     setCategory(data.data)
@@ -60,9 +62,7 @@ export const Form = () => {
                     snackBar.enqueueSnackbar("Não foi possível carregar as informações", {
                         variant: 'error'
                     });
-                } finally {
-                    setLoding(false);
-                }
+                } 
             })();
         }
 
@@ -79,8 +79,6 @@ export const Form = () => {
     }, [register])
 
     async function onSubmit(formData, event) {
-
-        setLoding(true);
 
         try {
             const http = !category
@@ -107,9 +105,7 @@ export const Form = () => {
             snackBar.enqueueSnackbar("Não foi possível salvar a categoria", {
                 variant: 'error'
             });
-        } finally {
-            setLoding(false);
-        }
+        } 
     }
     
 
