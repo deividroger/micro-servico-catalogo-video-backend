@@ -39,6 +39,7 @@ import { InputFileComponent } from "../../../components/InputFile";
 import { FormHelperText } from '@material-ui/core';
 
 import useSnackbarFormError from '../../../hooks/useSnackbarFormError'
+import SnackbarUpload from '../../../components/SnackbarUpload';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
@@ -133,7 +134,7 @@ export const Form = () => {
         }
     });
 
-    
+
 
     const snackbar = useSnackbar();
     const classes = useStyles();
@@ -153,11 +154,11 @@ export const Form = () => {
     ) as MutableRefObject<{ [key: string]: MutableRefObject<InputFileComponent> }>;
 
 
-    useSnackbarFormError(formState.submitCount,errors);
+    useSnackbarFormError(formState.submitCount, errors);
 
-    useEffect(()=>{
+    useEffect(() => {
 
-    },[formState.submitCount] )
+    }, [formState.submitCount])
 
     useEffect(() => {
         ['rating',
@@ -169,6 +170,18 @@ export const Form = () => {
 
 
     useEffect(() => {
+        snackbar.enqueueSnackbar('', {
+            key: 'snackbar-upload',
+            persist: true,
+            anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'right'
+            },
+            content: (key, message) => {
+                const id = key as any
+                return <SnackbarUpload id={id} />
+            }
+        })
 
         if (!id) {
             return;
@@ -241,7 +254,7 @@ export const Form = () => {
         castMemberRef.current.clear();
         genreRef.current.clear();
         categoryRef.current.clear();
-         //reset(data);
+        //reset(data);
     }
 
     return (
