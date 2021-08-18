@@ -3,6 +3,7 @@ import { categoryRoutes } from './categoryRoutes';
 import { videosRoutes } from './videoRoutes';
 import { genresRoutes } from './genresRoutes';
 import { castMembersRoutes } from './castMembersRoutes';
+import { uploadRoutes} from './uploadRoutes';
 import { dashboardRoutes } from './dashboardRoutes';
 
 export interface MyRouteProps extends RouteProps {
@@ -21,7 +22,9 @@ const routes: MyRouteProps[] = [
     ...castMembersRoutes
     ,
     ...videosRoutes
-
+    ,
+    ...uploadRoutes
+    
 ];
 
 export default routes;
