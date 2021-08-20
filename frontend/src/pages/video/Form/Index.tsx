@@ -40,6 +40,8 @@ import { FormHelperText } from '@material-ui/core';
 
 import useSnackbarFormError from '../../../hooks/useSnackbarFormError'
 import SnackbarUpload from '../../../components/SnackbarUpload';
+import { useDispatch, useSelector } from 'react-redux';
+import {State as UploadState, Upload} from '../../../store/upload/types';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
@@ -154,6 +156,10 @@ export const Form = () => {
     ) as MutableRefObject<{ [key: string]: MutableRefObject<InputFileComponent> }>;
 
 
+    const uploads = useSelector<UploadState, Upload[]>((state)=> state.uploads)
+
+    const dispatch = useDispatch();
+
     useSnackbarFormError(formState.submitCount, errors);
 
     useEffect(() => {
@@ -163,6 +169,7 @@ export const Form = () => {
     useEffect(() => {
         ['rating',
             'opened',
+            'cast_members',
             'genres',
             'categories',
             ...fileFields].forEach(name => register({ name }));
