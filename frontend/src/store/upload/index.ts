@@ -6,17 +6,20 @@ export const { Types, Creators } = createActions<{
     ADD_UPLOAD: string,
     REMOVE_UPLOAD: string;
     UPDATE_PROGRESS: string;
+    SET_UPLOAD_ERROR: string;
 
 }, {
     addUpload(payload: Typings.AddUploadAction['payload']): Typings.AddUploadAction
     removeUpload(payload: Typings.RemoveUploadAction['payload']): Typings.RemoveUploadAction
     updateProgress(payload: Typings.UpdateProgressAction['payload']): Typings.UpdateProgressAction
+    setUploadError(payload: Typings.UpdateProgressAction['payload']): Typings.SetUploadErrorAction
 
 }>
     ({
         addUpload: ['payload'],
         removeUpload: ['payload'],
-        updateProgress: ['payload']
+        updateProgress: ['payload'],
+        setUploadError['payload']
 
     });
 
@@ -29,6 +32,7 @@ const reducer = createReducer<Typings.State, Typings.Actions>(INITIAL_STATE, {
     [Types.ADD_UPLOAD]: addUpload as any,
     [Types.REMOVE_UPLOAD]: removeUpload as any,
     [Types.UPDATE_PROGRESS]: updateProgress as any,
+    [Types.SET_UPLOAD_ERROR]: setUploadError as any,
 
 });
 
@@ -91,6 +95,10 @@ function updateProgress(state: Typings.State = INITIAL_STATE, action: Typings.Up
     const upload = state.uploads[indexUpload];
     const file = upload.files[indexFile];
 
+    if(file.progress === action.payload.progress) {
+        return state;
+    }
+
     const uploads = update(state.uploads, {
         [indexUpload]: {
             $apply(upload) {
@@ -101,6 +109,32 @@ function updateProgress(state: Typings.State = INITIAL_STATE, action: Typings.Up
                 })
                 const progress = calculateGlobalProgress(files);
                 return { ...upload, progress, files }
+            }
+        }
+    });
+
+    return { uploads };
+}
+
+function setUploadError(state: Typings.State = INITIAL_STATE, action: Typings.SetUploadErrorAction): Typings.State {
+
+    const videoId = action.payload.video.id;
+    const fileField = action.payload.fileField;
+    const { indexUpload, indexFile } = findIndexUploadAndFile(state, videoId, fileField);
+
+    if (typeof indexUpload === "undefined") {
+        return state;
+    }
+
+    const upload = state.uploads[indexUpload];
+    const file = upload.files[indexFile];
+
+    const uploads = update(state.uploads, {
+        [indexUpload]: {
+            files: {
+                [indexFile]: {
+                    $set: { ...file, error: action.payload.error, progress: 1 }
+                }
             }
         }
     });
