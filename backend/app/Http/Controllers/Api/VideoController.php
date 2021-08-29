@@ -23,19 +23,20 @@ class VideoController extends BasicCrudController
             'duration' => 'required|integer|min:1',
             'categories_id' => 'required|array|exists:categories,id,deleted_at,NULL',
             'genres_id' => [
-                    'required',
-                     'array', 
-                     'exists:genres,id,deleted_at,NULL'
-                    ],
+                'required',
+                'array',
+                'exists:genres,id,deleted_at,NULL'
+            ],
             'cast_members_id' => [
-                    'required',
-                    'array',
-                    'exists:cast_members,id,deleted_at,NULL'],
+                'required',
+                'array',
+                'exists:cast_members,id,deleted_at,NULL'
+            ],
             'thumb_file' => 'image|max:' . Video::THUMB_FILE_MAX_SIZE,
             'banner_file' => 'image|max:' . Video::BANNER_FILE_MAX_SIZE,
             'video_file' => 'mimetypes:video/mp4|max:' . Video::VIDEO_FILE_MAX_SIZE,
             'trailer_file' => 'mimetypes:video/mp4|max:' . Video::TRAILER_FILE_MAX_SIZE
-            
+
         ];
     }
 
@@ -52,42 +53,43 @@ class VideoController extends BasicCrudController
         $resource = $this->resource();
 
         return new $resource($obj);
-
     }
 
     public function update(Request $request, $id)
     {
         $obj = $this->findOrFail($id);
         $this->addRuleIfGenreHasCategories($request);
-        $validateData = $this->validate($request, $this->rulesUpdate());
-          
+        $validateData = $this->validate(
+            $request,
+            $request->isMethod('PUT') ? $this->rulesUpdate() : $this->rulesPatch()
+        );
+
         $obj->update($validateData);
 
         $resource = $this->resource();
 
         return new $resource($obj);
-        
     }
 
-    protected function addRuleIfGenreHasCategories(Request $request){
+    protected function addRuleIfGenreHasCategories(Request $request)
+    {
 
         $categoriesId =  $request->get('categories_id');
 
-        $categoriesId = is_array($categoriesId) ? $categoriesId: [];
+        $categoriesId = is_array($categoriesId) ? $categoriesId : [];
 
-        $this->rules['genre_id'][] = new GenresHasCategoriesRule( $categoriesId );
+        $this->rules['genre_id'][] = new GenresHasCategoriesRule($categoriesId);
     }
 
     protected function resourceCollection()
     {
-     return $this->resource();
+        return $this->resource();
     }
 
     protected function resource()
     {
         return VideoResource::class;
     }
-
 
     protected function model()
     {
