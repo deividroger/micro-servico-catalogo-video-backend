@@ -58,6 +58,8 @@ class VideoControllerUploadsTest extends BaseVideoControllerTestCase{
         $response->assertStatus(201);
 
         $this->assertFilesOnPersist($response,$files);
+
+        
     }
 
     public function testUpdateWithFiles(){

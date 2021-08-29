@@ -27,11 +27,15 @@ Route::group(['namespace'=>'Api'],function(){
     Route::delete('categories', 'CategoryController@destroyCollection');
 
     Route::resource('genres', 'GenreController',$exceptCreateAndEdit);
-    Route::delete('genres', 'genres@destroyCollection');
+
+    Route::delete('genres', 'GenreController@destroyCollection');
+
 
     Route::resource('cast_members', 'CastMemberController',$exceptCreateAndEdit);
-    Route::delete('cast_members', 'cast_members@destroyCollection');
+    Route::delete('cast_members', 'CastMemberController@destroyCollection');
+
 
     Route::resource('videos', 'VideoController',$exceptCreateAndEdit);
-    Route::delete('videos', 'videos@destroyCollection');
+    Route::delete('videos', 'VideoController@destroyCollection');
+
 });

@@ -6,7 +6,7 @@ use App\Models\Genre;
 use PHPUnit\Framework\TestCase;
 use App\Models\Traits\Uuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use EloquentFilter\Filterable;
 class GenreUnitTest extends TestCase
 {
     private $genre;
@@ -37,7 +37,7 @@ class GenreUnitTest extends TestCase
     public function testIfUseTraits(){
 
         $traits =[
-            SoftDeletes::class, Uuid::class
+            SoftDeletes::class, Uuid::class, Filterable::class
         ];
        
         $genreTraits = array_keys( class_uses(Genre::class));

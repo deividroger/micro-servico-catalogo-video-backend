@@ -34,12 +34,12 @@ export default class HttpResource {
         return this.http.post<T>(this.resource, sendData);
     }
 
-    update<T = any>(id, data, options?: { http?: { usePost: boolean } }): Promise<AxiosResponse<T>> {
+    update<T = any>(id, data, options?: { http?: { usePost: boolean },config?: AxiosRequestConfig }): Promise<AxiosResponse<T>> {
         let sendData = data;
         if (this.containsFile(data)) {
             sendData = this.getFormData(data);
         }
-        const {http} = options as any;
+        const {http} = (options || {} ) as any;
         return !options || !http || !http.usePost
             ? this.http.put<T>(`${this.resource}/${id}`, sendData)
             : this.http.post<T>(`${this.resource}/${id}`, sendData)

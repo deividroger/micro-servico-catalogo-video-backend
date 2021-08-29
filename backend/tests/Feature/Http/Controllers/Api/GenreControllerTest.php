@@ -156,28 +156,23 @@ class GenreControllerTest extends TestCase
             ]
         ];
 
-        foreach($data as $test){
-            $reponse = $this->assertStore($test['send_data'],$test['test_data']);
-            $reponse->assertJsonStructure([
-                'data' => $this->fieldsSerialized
-            ]);
-
-            $this->assertResource($reponse,new GenreResource(
-                Genre::find($reponse->json('data.id'))
-            ));
-
-            $response = $this->assertUpdate($test['send_data'],$test['test_data']);
+        foreach ($data as $test) {
+            $response = $this->assertStore($test['send_data'], $test['test_data']);
             $response->assertJsonStructure([
                 'data' => $this->fieldsSerialized
             ]);
-
+            $this->assertResource($response, new GenreResource(
+                Genre::find($response->json('data.id'))
+            ));
+            $response = $this->assertUpdate($test['send_data'], $test['test_data']);
+            $response->assertJsonStructure([
+                'data' => $this->fieldsSerialized
+            ]);
             $this->assertResource($response, new GenreResource(
                 Genre::find($response->json('data.id'))
             ));
         }
 
-
-       
     }
 
    
