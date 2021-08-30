@@ -12,14 +12,14 @@ export const { Types, Creators } = createActions<{
     addUpload(payload: Typings.AddUploadAction['payload']): Typings.AddUploadAction
     removeUpload(payload: Typings.RemoveUploadAction['payload']): Typings.RemoveUploadAction
     updateProgress(payload: Typings.UpdateProgressAction['payload']): Typings.UpdateProgressAction
-    setUploadError(payload: Typings.UpdateProgressAction['payload']): Typings.SetUploadErrorAction
+    setUploadError(payload: Typings.SetUploadErrorAction['payload']): Typings.SetUploadErrorAction
 
 }>
     ({
         addUpload: ['payload'],
         removeUpload: ['payload'],
         updateProgress: ['payload'],
-        setUploadError['payload']
+        setUploadError:['payload']
 
     });
 
