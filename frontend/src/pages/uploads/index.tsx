@@ -16,9 +16,9 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import UploadItem from "./UploadItem";
 import { Page } from "../../components/Page";
-//import {useSelector} from "react-redux";
-//import {Upload, UploadModule} from "../../store/upload/types";
-//import {VideoFileFieldsMap} from "../../util/models";
+import { useSelector } from 'react-redux';
+import { UploadModule, Upload } from '../../store/upload/types';
+import { VideoFileFieldsMap } from '../../util/models';
 
 const useStyles = makeStyles((theme: Theme) => {
     return ({
@@ -34,36 +34,54 @@ const useStyles = makeStyles((theme: Theme) => {
 
 export const Uploads = () => {
     const classes = useStyles();
+
+    const uploads = useSelector < UploadModule, Upload[]> (
+        (state) => state.upload.uploads
+    );
+
+
     return (
         <Page title={'Uploads'}>
 
-            <Card elevation={5} >
-                <CardContent>
-                    <UploadItem>
-                        Vídeo - E o vento levou
-                    </UploadItem>
-                    <ExpansionPanel style={{ margin: 0 }}>
-                        <ExpansionPanelSummary
-                            className={classes.panelSummary}
-                            expandIcon={<ExpandMoreIcon className={classes.expandedIcon} />}
-                        >
-                            <Typography>Ver detalhes</Typography>
-                        </ExpansionPanelSummary>
-                        <ExpansionPanelDetails style={{ padding: '0px' }}>
-                            <Grid item xs={12}>
-                                <List dense={true} style={{ padding: '0px' }}>
+            {
+                uploads.map((upload, key) => (
 
-                                    <Divider />
-                                    <UploadItem>
-                                        Principal - nomedoarquivo.mp4
-                                    </UploadItem>
+                    <Card elevation={5} key={key} >
+                        <CardContent>
+                            <UploadItem uploadOrFile={upload}>
+                                Vídeo - E o vento levou
+                            </UploadItem>
+                            <ExpansionPanel style={{ margin: 0 }}>
+                                <ExpansionPanelSummary
+                                    className={classes.panelSummary}
+                                    expandIcon={<ExpandMoreIcon className={classes.expandedIcon} />}
+                                >
+                                    <Typography>Ver detalhes</Typography>
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails style={{ padding: '0px' }}>
+                                    <Grid item xs={12}>
+                                        <List dense={true} style={{ padding: '0px' }}>
 
-                                </List>
-                            </Grid>
-                        </ExpansionPanelDetails>
-                    </ExpansionPanel>
-                </CardContent>
-            </Card>
+                                            {
+                                                upload.files.map((file,key) => {
+                                                    <React.Fragment key={key}>
+
+                                                        <Divider />
+                                                        <UploadItem uploadOrFile={file}>
+                                                            {`${VideoFileFieldsMap[file.fileField]}- ${file.filename}`}
+                                                        </UploadItem>
+                                                    </React.Fragment>
+                                                })
+                                            }
+
+
+                                        </List>
+                                    </Grid>
+                                </ExpansionPanelDetails>
+                            </ExpansionPanel>
+                        </CardContent>
+                    </Card>
+                ))}
 
 
         </Page>

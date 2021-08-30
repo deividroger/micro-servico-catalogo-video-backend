@@ -16,7 +16,11 @@ export interface Upload {
 
 }
 
-export interface State {
+export interface UploadModule {
+    upload: UploadState
+}
+
+export interface UploadState {
     uploads: Upload[]
 }
 
