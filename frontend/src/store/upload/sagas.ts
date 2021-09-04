@@ -69,7 +69,7 @@ function sendUpload({ id, fileInfo }: { id: string, fileInfo: FileInfo }) {
                 },
                 config: {
                     headers: {
-                        ignoreLoading: true
+                        'x-ignore-loading': true
                     },
                     onUploadProgress(progressEvent: ProgressEvent) {
 
