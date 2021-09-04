@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useCallback} from 'react'
 import { RefAttributes, useImperativeHandle, useRef, MutableRefObject } from "react";
 
 import { createStyles, FormControl, FormControlProps, FormHelperText, Typography, Theme, makeStyles } from '@material-ui/core'
@@ -46,7 +47,7 @@ const CategoryField = React.forwardRef < CategoryFieldComponent, CategoryFieldPr
 
     const autocompleteRef = useRef() as MutableRefObject<AsyncAutocompleteComponent>;
 
-    function fetchOptions(searchText) {
+    const fetchOptions = useCallback((searchText) => {
 
         return autocompleteHttp(
 
@@ -59,7 +60,7 @@ const CategoryField = React.forwardRef < CategoryFieldComponent, CategoryFieldPr
                 }
             )
         ).then(data => data.data);
-    }
+    },[autocompleteHttp]);  
 
     useImperativeHandle(ref, () => ({
         clear: () => autocompleteRef.current.clear()

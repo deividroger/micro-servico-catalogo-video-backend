@@ -38,7 +38,7 @@ export const Form = () => {
     });
 
 
-    const snackbar = useSnackbar();
+    const {enqueueSnackbar} = useSnackbar();
     const history = useHistory();
     const { id }: any = useParams();
     const [genre, setGenre] = useState < Genre | null > (null);
@@ -73,7 +73,7 @@ export const Form = () => {
 
                 } catch (error) {
                     console.error(error);
-                    snackbar.enqueueSnackbar("Não foi possível carregar as informações", {
+                    enqueueSnackbar("Não foi possível carregar as informações", {
                         variant: "error"
                     })
                 } finally {
@@ -86,7 +86,7 @@ export const Form = () => {
             isSubscribed = false;
         };
 
-    }, []);
+    }, [id,reset,enqueueSnackbar]);
 
 
     useEffect(() => {
@@ -107,7 +107,7 @@ export const Form = () => {
 
             const { data } = await http;
 
-            snackbar.enqueueSnackbar("Gênero salvo com sucesso!", {
+            enqueueSnackbar("Gênero salvo com sucesso!", {
                 variant: "success"
             });
 
@@ -123,7 +123,7 @@ export const Form = () => {
 
         } catch (error) {
             console.error(error);
-            snackbar.enqueueSnackbar("Não foi possível salvar o gênero", {
+            enqueueSnackbar("Não foi possível salvar o gênero", {
                 variant: "error"
             });
 

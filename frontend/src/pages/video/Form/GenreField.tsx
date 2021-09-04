@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {RefAttributes, useImperativeHandle,useRef, MutableRefObject} from "react";
+import { useImperativeHandle,useRef, MutableRefObject} from "react";
 
 import { FormControl, FormControlProps, FormHelperText, Typography } from '@material-ui/core'
 import AsyncAutocomplete, {AsyncAutocompleteComponent}  from '../../../components/AsyncAutoComplete';
@@ -10,6 +10,7 @@ import genreHttp from '../../../util/http/genre-http';
 import useHttpHandled from '../../../hooks/useHttpHandled';
 import useCollectionManager from '../../../hooks/useCollectionManager';
 import { getGenresFromCategory } from '../../../util/model-filters';
+import { useCallback } from 'react';
 
 
 
@@ -42,7 +43,7 @@ const GenreField = React.forwardRef<GenreFieldComponent, GenreFieldProps>((props
     const { removeItem: removeCategory } = useCollectionManager(categories, setCategories);
     const autocompleteRef = useRef() as MutableRefObject<AsyncAutocompleteComponent>;
 
-    function fetchOptions(searchText) {
+    const fetchOptions = useCallback((searchText) => {
         return autocompleteHttp(
 
             genreHttp.list(
@@ -54,7 +55,7 @@ const GenreField = React.forwardRef<GenreFieldComponent, GenreFieldProps>((props
                 }
             )
         ).then(data => data.data);
-    }
+    },[autocompleteHttp] ) ;
 
     useImperativeHandle(ref, () => ({
         clear: () => autocompleteRef.current.clear()
@@ -99,7 +100,7 @@ const GenreField = React.forwardRef<GenreFieldComponent, GenreFieldProps>((props
                                 const categoriesWithOneGenre = categories
                                     .filter(category => {
                                         const genresFromCategory = getGenresFromCategory(genres, category);
-                                        return genresFromCategory.length === 1 && genres[0].id == genre.id
+                                        return genresFromCategory.length === 1 && genres[0].id === genre.id
                                     });
 
                                 categoriesWithOneGenre.forEach(cat => removeCategory(cat));

@@ -1,4 +1,4 @@
-import {Dispatch, Reducer, useEffect, useReducer, useState} from "react";
+import {Dispatch, Reducer, useEffect, useMemo, useReducer, useState} from "react";
 import reducer, {Creators} from "../store/filter";
 import {Actions as FilterActions, State as FilterState} from "../store/filter/types";
 import {MUIDataTableColumn} from "mui-datatables";
@@ -8,8 +8,10 @@ import {History} from 'history';
 import {isEqual} from 'lodash';
 import * as yup from '../util/vendor/yup';
 import {MuiDataTableRefComponent} from "../components/Table";
+import { ObjectSchema } from "../util/vendor/yup";
 
 interface FilterManagerOptions {
+    schema: ObjectSchema;
     columns: MUIDataTableColumn[];
     rowsPerPage: number;
     rowsPerPageOptions: number[];
@@ -25,13 +27,60 @@ interface ExtraFilter {
     createValidationSchema: () => any,
 }
 
-interface UseFilterOptions extends Omit<FilterManagerOptions, 'history'> {
-
+interface UseFilterOptions  {
+    
+    columns: MUIDataTableColumn[];
+    rowsPerPage: number;
+    rowsPerPageOptions: number[];
+    debounceTime: number;
+    tableRef: React.MutableRefObject<MuiDataTableRefComponent>
+    extraFilter?: ExtraFilter
 }
 
 export default function useFilter(options: UseFilterOptions) {
     const history = useHistory();
-    const filterManager = new FilterManager({...options, history});
+    const {rowsPerPage,rowsPerPageOptions,extraFilter,columns} = options;
+
+    const schema = useMemo(()=>{
+        return yup.object().shape({
+            search: yup.string()
+                .transform(value => !value ? undefined : value)
+                .default(''),
+            pagination: yup.object().shape({
+                page: yup.number()
+                    .transform(value => isNaN(value) || parseInt(value) < 1 ? undefined : value)
+                    .default(1),
+                per_page: yup.number()
+                    .transform(value =>
+                        isNaN(value) || !rowsPerPageOptions.includes(parseInt(value)) ? undefined : value
+                    )
+                    .default(rowsPerPage),
+            }),
+            order: yup.object().shape({
+                sort: yup.string()
+                    .nullable()
+                    .transform(value => {
+                        const columnsName = columns
+                            .filter(column => !column.options || column.options.sort !== false)
+                            .map(column => column.name);
+                        return columnsName.includes(value) ? value : undefined;
+                    })
+                    .default(null),
+                dir: yup.string()
+                    .nullable()
+                    .transform(value => !value || !['asc', 'desc'].includes(value.toLowerCase()) ? undefined : value)
+                    .default(null),
+            }),
+            ...(
+                extraFilter && {
+                    extraFilter: extraFilter.createValidationSchema()
+                }
+            )
+        });
+
+    },[rowsPerPageOptions,rowsPerPage,columns, extraFilter ]);
+
+    const filterManager = new FilterManager({...options, history, schema});
     const INITIAL_STATE = filterManager.getStateFromURL();
     const [filterState, dispatch] = useReducer<Reducer<FilterState, FilterActions>>(reducer, INITIAL_STATE);
     const [debouncedFilterState] = useDebounce(filterState, options.debounceTime);
@@ -41,6 +90,8 @@ export default function useFilter(options: UseFilterOptions) {
     filterManager.dispatch = dispatch;
 
     filterManager.applyOrderInColumns();
+
+   
 
     useEffect(() => {
         filterManager.replaceHistory()
@@ -72,7 +123,7 @@ export class FilterManager {
 
     constructor(options: FilterManagerOptions) {
         const {
-            columns, rowsPerPage, rowsPerPageOptions, history, tableRef, extraFilter
+           schema, columns, rowsPerPage, rowsPerPageOptions, history, tableRef, extraFilter
         } = options;
         this.columns = columns;
         this.rowsPerPage = rowsPerPage;
@@ -80,7 +131,8 @@ export class FilterManager {
         this.history = history;
         this.tableRef = tableRef;
         this.extraFilter = extraFilter;
-        this.createValidationSchema();
+        this.schema = schema;
+        
     }
 
     private resetTablePagination() {
@@ -169,7 +221,7 @@ export class FilterManager {
         const nextState = this.debouncedState;
 
         if (isEqual(oldState, nextState)) {
-            console.log('isEqual');
+            
             return;
         }
 
@@ -215,41 +267,5 @@ export class FilterManager {
         })
     }
 
-    private createValidationSchema() {
-        this.schema = yup.object().shape({
-            search: yup.string()
-                .transform(value => !value ? undefined : value)
-                .default(''),
-            pagination: yup.object().shape({
-                page: yup.number()
-                    .transform(value => isNaN(value) || parseInt(value) < 1 ? undefined : value)
-                    .default(1),
-                per_page: yup.number()
-                    .transform(value =>
-                        isNaN(value) || !this.rowsPerPageOptions.includes(parseInt(value)) ? undefined : value
-                    )
-                    .default(this.rowsPerPage),
-            }),
-            order: yup.object().shape({
-                sort: yup.string()
-                    .nullable()
-                    .transform(value => {
-                        const columnsName = this.columns
-                            .filter(column => !column.options || column.options.sort !== false)
-                            .map(column => column.name);
-                        return columnsName.includes(value) ? value : undefined;
-                    })
-                    .default(null),
-                dir: yup.string()
-                    .nullable()
-                    .transform(value => !value || !['asc', 'desc'].includes(value.toLowerCase()) ? undefined : value)
-                    .default(null),
-            }),
-            ...(
-                this.extraFilter && {
-                    extraFilter: this.extraFilter.createValidationSchema()
-                }
-            )
-        });
-    }
+    
 }

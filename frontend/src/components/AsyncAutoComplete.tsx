@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Autocomplete, AutocompleteProps, UseAutocompleteSingleProps } from '@material-ui/lab';
 import { CircularProgress, TextFieldProps } from '@material-ui/core';
 import { TextField } from '@material-ui/core';
-import { useState, useEffect,useImperativeHandle , RefAttributes} from 'react';
+import { useState, useEffect, useImperativeHandle, RefAttributes } from 'react';
 
 import { useDebounce } from 'use-debounce/lib';
 
@@ -18,10 +18,10 @@ export interface AsyncAutocompleteComponent {
   clear: () => void;
 }
 
-const AsyncAutocomplete = React.forwardRef<AsyncAutocompleteComponent, AsyncAutocompleteProps>((props, ref) => {
+const AsyncAutocomplete = React.forwardRef < AsyncAutocompleteComponent, AsyncAutocompleteProps> ((props, ref) => {
 
 
-  const { AutocompleteProps, debounceTime = 300 } = props;
+  const { AutocompleteProps, debounceTime = 300,fetchOptions } = props;
   const { freeSolo = false, onOpen, onClose, onInputChange } = AutocompleteProps as any;
 
   const [open, setOpen] = useState(false);
@@ -79,17 +79,22 @@ const AsyncAutocomplete = React.forwardRef<AsyncAutocompleteComponent, AsyncAuto
   useEffect(() => {
 
 
-    if (!open || debouncedSearchText === "" && freeSolo) {
+    if (!open && !freeSolo) {
       setOptions([]);
     }
 
-  }, [open])
+  }, [open, freeSolo])
 
   useEffect(() => {
 
-    if (!open || debouncedSearchText === "" && freeSolo) {
+    if(!open) {
       return;
     }
+    if(debouncedSearchText === "" && freeSolo) {
+      return;
+    }
+
+    
 
     let isSubscribed = true;
 
@@ -97,7 +102,7 @@ const AsyncAutocomplete = React.forwardRef<AsyncAutocompleteComponent, AsyncAuto
       setLoading(true);
       try {
 
-        const data = await props.fetchOptions(debouncedSearchText);
+        const data = await fetchOptions(debouncedSearchText);
         if (isSubscribed) {
           setOptions(data)
         }
@@ -112,13 +117,13 @@ const AsyncAutocomplete = React.forwardRef<AsyncAutocompleteComponent, AsyncAuto
       isSubscribed = false;
     };
 
-  }, [freeSolo ? debouncedSearchText : open]);
+  }, [freeSolo, debouncedSearchText, open, fetchOptions]);
 
-  useImperativeHandle(ref,()=>({
-      clear: ()=> {
-        setsearchText("");
-        setOptions([]);
-      }
+  useImperativeHandle(ref, () => ({
+    clear: () => {
+      setsearchText("");
+      setOptions([]);
+    }
   }));
 
 

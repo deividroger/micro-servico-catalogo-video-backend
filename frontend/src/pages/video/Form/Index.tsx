@@ -7,7 +7,6 @@ import {
     TextField,
     Typography,
     useTheme,
-    Button,
     Card,
     CardContent,
     makeStyles,
@@ -36,8 +35,6 @@ import CastMemberField, { CastMemberFieldComponent } from "./CastMemberField";
 import { omit, zipObject } from 'lodash';
 import { InputFileComponent } from "../../../components/InputFile";
 
-import { FormHelperText } from '@material-ui/core';
-
 import useSnackbarFormError from '../../../hooks/useSnackbarFormError'
 import SnackbarUpload from '../../../components/SnackbarUpload';
 import { useDispatch } from 'react-redux';
@@ -45,6 +42,7 @@ import { Creators } from '../../../store/upload';
 import { FileInfo } from '../../../store/upload/types';
 import { useContext } from 'react';
 import LoadingContext from '../../../components/loading/LoadingContext';
+import { useCallback } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardUpload: {
@@ -124,7 +122,7 @@ export const Form = () => {
         genres,
         categories,
         opened
-        
+
     } > ({
         validationSchema,
         defaultValues: {
@@ -133,11 +131,11 @@ export const Form = () => {
             genres: [],
             categories: [],
             opened: false
-            
+
         }
     });
 
-    const snackbar = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
     const history = useHistory();
     const { id }: any = useParams();
@@ -155,8 +153,19 @@ export const Form = () => {
     ) as MutableRefObject<{ [key: string]: MutableRefObject<InputFileComponent> }>;
 
 
-    // const uploads = useSelector < UploadModule, Upload[]> ((state) => state.upload.uploads);
+
     const dispatch = useDispatch();
+
+    const resetForm = useCallback((data) => {
+        Object.keys(uploadsRef.current).forEach(
+            field => uploadsRef.current[field].current.clear()
+        );
+        castMemberRef.current.clear();
+        genreRef.current.clear();
+        categoryRef.current.clear();
+        reset(data);
+    }, [castMemberRef, genreRef, categoryRef, reset, uploadsRef]);
+
     useSnackbarFormError(formState.submitCount, errors);
 
     useEffect(() => {
@@ -174,7 +183,7 @@ export const Form = () => {
 
 
     useEffect(() => {
-        snackbar.enqueueSnackbar('', {
+        enqueueSnackbar('', {
             key: 'snackbar-upload',
             persist: true,
             anchorOrigin: {
@@ -194,7 +203,7 @@ export const Form = () => {
         let isSubscribed = true;
 
         (async () => {
-            
+
             try {
                 const { data } = await videoHttp.get(id);
                 if (isSubscribed) {
@@ -203,13 +212,13 @@ export const Form = () => {
                 }
             } catch (error) {
                 console.error(error);
-                snackbar.enqueueSnackbar('Não foi possível carregar as informações', { variant: 'error' });
-            } 
+                enqueueSnackbar('Não foi possível carregar as informações', { variant: 'error' });
+            }
         })();
         return () => {
             isSubscribed = false;
         }
-    }, []);
+    }, [id, resetForm, enqueueSnackbar]);
 
     async function onSubmit(formData, event) {
 
@@ -228,7 +237,7 @@ export const Form = () => {
                 : videoHttp.update(video.id, sendData);
             const { data } = await http;
 
-            snackbar.enqueueSnackbar('Vídeo salvo com sucesso', { variant: 'success' });
+            enqueueSnackbar('Vídeo salvo com sucesso', { variant: 'success' });
 
             uploadFiles(data.data);
 
@@ -246,19 +255,8 @@ export const Form = () => {
 
         } catch (error) {
             console.error(error);
-            snackbar.enqueueSnackbar('Não foi possível salvar o vídeo', { variant: 'error' });
-        } 
-    }
-
-
-    function resetForm(data) {
-        Object.keys(uploadsRef.current).forEach(
-            field => uploadsRef.current[field].current.clear()
-        );
-        castMemberRef.current.clear();
-        genreRef.current.clear();
-        categoryRef.current.clear();
-        reset(data);
+            enqueueSnackbar('Não foi possível salvar o vídeo', { variant: 'error' });
+        }
     }
 
     function uploadFiles(video) {
@@ -266,20 +264,20 @@ export const Form = () => {
             .filter(fileField => getValues()[fileField])
             .map(fileField => ({ fileField, file: getValues()[fileField] }));
 
-            if(!files.length){
-                return;
-            }
+        if (!files.length) {
+            return;
+        }
 
         dispatch(Creators.addUpload({ video, files }));
 
-        snackbar.enqueueSnackbar('',{
-            key:'snackbar-upload',
+        enqueueSnackbar('', {
+            key: 'snackbar-upload',
             persist: true,
             anchorOrigin: {
                 vertical: 'bottom',
                 horizontal: 'right'
             },
-            content:(key,message) => {
+            content: (key, message) => {
                 const id = key as any;
                 return <SnackbarUpload id={id} />
             }

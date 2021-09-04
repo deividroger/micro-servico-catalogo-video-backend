@@ -1,16 +1,17 @@
 // @flow
 import * as React from 'react';
-import AsyncAutocomplete, {AsyncAutocompleteComponent}  from '../../../components/AsyncAutoComplete';
+import AsyncAutocomplete, { AsyncAutocompleteComponent } from '../../../components/AsyncAutoComplete';
 import GridSelected from "../../../components/GridSelected";
 import GridSelectedItem from "../../../components/GridSelectedItem";
-import {FormControl, FormControlProps, FormHelperText, Grid, Typography} from "@material-ui/core";
+import { FormControl, FormControlProps, FormHelperText,  Typography } from "@material-ui/core";
 import useHttpHandled from "../../../hooks/useHttpHandled";
 import useCollectionManager from "../../../hooks/useCollectionManager";
 import castMemberHttp from "../../../util/http/cast-member-http";
-import {MutableRefObject, RefAttributes, useRef} from "react";
-import {useImperativeHandle} from "react";
+import { MutableRefObject, RefAttributes, useRef } from "react";
+import { useImperativeHandle } from "react";
+import { useCallback } from 'react';
 
-interface CastMemberFieldProps extends RefAttributes<CastMemberFieldProps>{
+interface CastMemberFieldProps extends RefAttributes<CastMemberFieldProps> {
     castMembers: any[],
     setCastMembers: (castMembers) => void
     error: any
@@ -22,7 +23,7 @@ export interface CastMemberFieldComponent {
     clear: () => void
 }
 
-const CastMemberField = React.forwardRef<CastMemberFieldComponent, CastMemberFieldProps>((props, ref) => {
+const CastMemberField = React.forwardRef < CastMemberFieldComponent, CastMemberFieldProps> ((props, ref) => {
     const {
         castMembers,
         setCastMembers,
@@ -30,10 +31,10 @@ const CastMemberField = React.forwardRef<CastMemberFieldComponent, CastMemberFie
         disabled
     } = props;
     const autocompleteHttp = useHttpHandled();
-    const {addItem, removeItem} = useCollectionManager(castMembers, setCastMembers);
+    const { addItem, removeItem } = useCollectionManager(castMembers, setCastMembers);
     const autocompleteRef = useRef() as MutableRefObject<AsyncAutocompleteComponent>;
 
-    function fetchOptions(searchText) {
+    const fetchOptions = useCallback((searchText) => {
         return autocompleteHttp(
             castMemberHttp
                 .list({
@@ -42,7 +43,7 @@ const CastMemberField = React.forwardRef<CastMemberFieldComponent, CastMemberFie
                     }
                 })
         ).then(data => data.data)
-    }
+    }, [autocompleteHttp]);
 
     useImperativeHandle(ref, () => ({
         clear: () => autocompleteRef.current.clear()
