@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { addGlobalRequestInterceptor, addGlobalResponseInterceptor, removeGlobalRequestInterceptor, removeGlobalResponseInterceptor } from '../../util/http';
 import { useMemo } from 'react';
 import { useEffect } from 'react';
-import {omit} from 'lodash'
+
 
 export const LoadingProvider = (props) => {
     const [loading, setLoading] = useState < boolean > (false);
@@ -17,18 +17,18 @@ export const LoadingProvider = (props) => {
 
         const requestIds = addGlobalRequestInterceptor((config) => {
 
-            if (isSubscribed && config.headers.hasOwnProperty('ignoreLoading') ) {
+            if (isSubscribed && !config.headers.hasOwnProperty('x-ignore-loading') ) {
                 setLoading(true);
                 setCountRequest((prevCountRequest) => prevCountRequest+1);
             }
-            config.headers = omit(config.headers,'ignoreLoading')
+            
 
             return config;
         });
 
         const responseIds = addGlobalResponseInterceptor((response) => {
 
-            if (isSubscribed) {
+            if (isSubscribed && !response.config.headers.hasOwnProperty('x-ignore-loading')) {
                 
                 decrementCountRequest();
             }
@@ -36,7 +36,7 @@ export const LoadingProvider = (props) => {
             return response;
         }, (error) => {
 
-            if (isSubscribed) {
+            if (isSubscribed && !error.config.headers.hasOwnProperty('x-ignore-loading') ) {
                 
                 decrementCountRequest();
             }

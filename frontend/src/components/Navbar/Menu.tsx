@@ -9,7 +9,8 @@ const listRoutes = {
      'categories.list': 'Categorias',
      'cast_members.list': 'Membros de elenco',
      'genres.list': 'Gêneros',
-     'videos.list': 'Vídeos'
+     'videos.list': 'Vídeos',
+     'uploads': 'Uploads'
 };
 
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BasicCrudController;
 use App\Http\Resources\VideoResource;
 use App\Models\Video;
 use App\Rules\GenresHasCategoriesRule;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class VideoController extends BasicCrudController
@@ -79,6 +80,18 @@ class VideoController extends BasicCrudController
         $categoriesId = is_array($categoriesId) ? $categoriesId : [];
 
         $this->rules['genre_id'][] = new GenresHasCategoriesRule($categoriesId);
+    }
+
+    protected function queryBuilder(): Builder
+    {
+        $action = \Route::getCurrentRoute()->getAction()['uses'];
+        return parent::queryBuilder()->with([
+            strpos($action, 'index') !== false
+                ? 'genres'
+                : 'genres.categories',
+            'categories',
+            'castMembers'
+        ]);
     }
 
     protected function resourceCollection()

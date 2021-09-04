@@ -29,7 +29,7 @@ const  SubmmitActions: React.FC<SubmmitActionsProps> = (props) => {
     };
 
     return (
-        <Box dir={"rtl"}>
+        <Box dir={"lft"}>
 
             <Button color={"primary"} {...buttonProps} onClick={props.handleSave}> Salvar</Button>
 

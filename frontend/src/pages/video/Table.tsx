@@ -15,6 +15,8 @@ import useFilter from "../../hooks/useFilter";
 import DeleteDialog from '../../components/DeleteDialog';
 
 import useDeleteCollection from "../../hooks/useDeleteCollection";
+import { useContext } from 'react';
+import LoadingContext from '../../components/loading/LoadingContext';
 
 
 const columnsDefinition: TableColumn[] = [
@@ -100,7 +102,7 @@ const Table = () => {
     const snackbar = useSnackbar();
     const subscribed = useRef(true);
     const [data, setData] = useState < Video[] > ([]);
-    const [loading, setLoading] = useState < boolean > (false);
+    const loading = useContext(LoadingContext);
     const {openDeleteDialog, setOpenDeleteDialog, rowsToDelete, setRowsToDelete} = useDeleteCollection();
 
     const tableRef = useRef() as React.MutableRefObject<MuiDataTableRefComponent>;
@@ -135,7 +137,7 @@ const Table = () => {
     ]);
 
     async function getData() {
-        setLoading(true);
+        
         try {
             const { data } = await videoHttp.list < ListResponse < Video >> ({
                 queryParams: {
@@ -159,9 +161,7 @@ const Table = () => {
                 'Não foi possível carregar as informações',
                 { variant: 'error', }
             )
-        } finally {
-            setLoading(false);
-        }
+        } 
     }
 
     function deleteRows(confirmed: boolean) {
