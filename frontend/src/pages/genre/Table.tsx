@@ -110,6 +110,7 @@ const Table = () => {
     const {
         columns,
         filterManager,
+        cleanSearchText,
         filterState,
         debouncedFilterState,
         dispatch,
@@ -182,13 +183,13 @@ const Table = () => {
 
     useEffect(() => {
         subscribed.current = true;
-        filterManager.pushHistory();
+        
         getData();
         return () => {
             subscribed.current = false;
         }
     }, [
-        filterManager.cleanSearchText(debouncedFilterState.search),
+        cleanSearchText(debouncedFilterState.search),
         debouncedFilterState.pagination.page,
         debouncedFilterState.pagination.per_page,
         debouncedFilterState.order,
@@ -200,7 +201,7 @@ const Table = () => {
         try {
             const {data} = await genreHttp.list<ListResponse<Genre>>({
                 queryParams: {
-                    search: filterManager.cleanSearchText(debouncedFilterState.search),
+                    search: cleanSearchText(debouncedFilterState.search),
                     page: debouncedFilterState.pagination.page,
                     per_page: debouncedFilterState.pagination.per_page,
                     sort: debouncedFilterState.order.sort,

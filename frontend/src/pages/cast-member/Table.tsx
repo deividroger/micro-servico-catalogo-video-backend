@@ -1,19 +1,21 @@
 import * as React from 'react';
-import {useEffect, useState} from "react";
+import { useEffect, useState, useMemo } from "react";
 import format from "date-fns/format";
 import parseISO from "date-fns/parseISO";
 import castMemberHttp from "../../util/http/cast-member-http";
-import {CastMember, CastMemberTypeMap, ListResponse} from "../../util/models";
-import {IconButton, MuiThemeProvider} from "@material-ui/core";
-import {Link} from "react-router-dom";
+import { CastMember, CastMemberTypeMap, ListResponse } from "../../util/models";
+import { IconButton, MuiThemeProvider } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
-import DefaultTable, {makeActionStyles, TableColumn, MuiDataTableRefComponent} from '../../components/Table';
-import {useSnackbar} from "notistack";
-import {useRef} from "react";
+import DefaultTable, { makeActionStyles, TableColumn, MuiDataTableRefComponent } from '../../components/Table';
+import { useSnackbar } from "notistack";
+import { useRef } from "react";
 import useFilter from "../../hooks/useFilter";
-import {FilterResetButton} from "../../components/Table/FilterResetButton";
+import { FilterResetButton } from "../../components/Table/FilterResetButton";
 import * as yup from '../../util/vendor/yup';
-import {invert} from 'lodash';
+import { invert } from 'lodash';
+import { useCallback } from 'react';
+
 
 const castMemberNames = Object.values(CastMemberTypeMap);
 
@@ -43,7 +45,7 @@ const columnsDefinition: TableColumn[] = [
             filterOptions: {
                 names: castMemberNames
             },
-            customBodyRender: (value, tableMeta, updateValue) => { 
+            customBodyRender: (value, tableMeta, updateValue) => {
                 return CastMemberTypeMap[value];
             },
         }
@@ -69,14 +71,14 @@ const columnsDefinition: TableColumn[] = [
             customBodyRender: (value, tableMeta) => {
                 return (
                     <span>
-                    <IconButton
-                        color={'secondary'}
-                        component={Link}
-                        to={`/cast-members/${tableMeta.rowData[0]}/edit`}
-                    >
-                        <EditIcon/>
-                    </IconButton>
-                </span>
+                        <IconButton
+                            color={'secondary'}
+                            component={Link}
+                            to={`/cast-members/${tableMeta.rowData[0]}/edit`}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </span>
                 )
             }
         }
@@ -88,27 +90,14 @@ const rowsPerPage = 15;
 const rowsPerPageOptions = [15, 25, 50];
 const Table = () => {
 
-    const snackbar = useSnackbar();
+    const {enqueueSnackbar} = useSnackbar();
     const subscribed = useRef(true);
-    const [data, setData] = useState<CastMember[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [data, setData] = useState < CastMember[] > ([]);
+    const [loading, setLoading] = useState < boolean > (false);
     const tableRef = useRef() as React.MutableRefObject<MuiDataTableRefComponent>;
 
-    const {
-        columns,
-        filterManager,
-        filterState,
-        debouncedFilterState,
-        dispatch,
-        totalRecords,
-        setTotalRecords,
-    } = useFilter({
-        columns: columnsDefinition,
-        debounceTime: debounceTime,
-        rowsPerPage,
-        rowsPerPageOptions,
-        tableRef,
-        extraFilter: {
+    const extraFilter = useMemo(() => (
+        {
             createValidationSchema: () => {
                 return yup.object().shape({
                     type: yup.string()
@@ -124,7 +113,7 @@ const Table = () => {
                     ? {
                         ...(
                             debouncedState.extraFilter.type &&
-                            {type: debouncedState.extraFilter.type}
+                            { type: debouncedState.extraFilter.type }
                         ),
                     }
                     : undefined
@@ -135,8 +124,29 @@ const Table = () => {
                 }
             }
         }
+    ), []);
+
+
+    const {
+        columns,
+        filterManager,
+        cleanSearchText,
+        filterState,
+        debouncedFilterState,
+        dispatch,
+        totalRecords,
+        setTotalRecords,
+    } = useFilter({
+        columns: columnsDefinition,
+        debounceTime: debounceTime,
+        rowsPerPage,
+        rowsPerPageOptions,
+        tableRef,
+        extraFilter
     });
-    
+
+    const searchText = cleanSearchText(debouncedFilterState.search);
+
     const indexColumnType = columns.findIndex(c => c.name === 'type');
     const columnType = columns[indexColumnType];
     const typeFilterValue = filterState.extraFilter && filterState.extraFilter.type as never;
@@ -147,35 +157,20 @@ const Table = () => {
         serverSideFilterList[indexColumnType] = [typeFilterValue];
     }
 
-    useEffect(() => {
-        subscribed.current = true;
-        filterManager.pushHistory();
-        getData();
-        return () => {
-            subscribed.current = false;
-        }
-    }, [
-        filterManager.cleanSearchText(debouncedFilterState.search),
-        debouncedFilterState.pagination.page,
-        debouncedFilterState.pagination.per_page,
-        debouncedFilterState.order,
-        JSON.stringify(debouncedFilterState.extraFilter)
-    ]);
-
-    async function getData() {
+    const getData = useCallback(async ({ search, page, per_page, sort, dir, type }) => {
         setLoading(true);
         try {
-            const {data} = await castMemberHttp.list<ListResponse<CastMember>>({
+            const { data } = await castMemberHttp.list < ListResponse < CastMember >> ({
                 queryParams: {
-                    search: filterManager.cleanSearchText(debouncedFilterState.search),
-                    page: debouncedFilterState.pagination.page,
-                    per_page: debouncedFilterState.pagination.per_page,
-                    sort: debouncedFilterState.order.sort,
-                    dir: debouncedFilterState.order.dir,
-                    ...(
+                    search,
+                    page,
+                    per_page,
+                    sort,
+                    dir,
+                    ...(type &&
                         debouncedFilterState.extraFilter &&
                         debouncedFilterState.extraFilter.type &&
-                        {type: invert(CastMemberTypeMap)[debouncedFilterState.extraFilter.type]}
+                        { type: invert(CastMemberTypeMap)[type] }
                     )
                 }
             });
@@ -188,14 +183,44 @@ const Table = () => {
             if (castMemberHttp.isCancelledRequest(error)) {
                 return;
             }
-            snackbar.enqueueSnackbar(
+            enqueueSnackbar(
                 'Não foi possível carregar as informações',
-                {variant: 'error',}
+                { variant: 'error', }
             )
         } finally {
             setLoading(false);
         }
-    }
+    }, [enqueueSnackbar,setTotalRecords]);
+
+
+    useEffect(() => {
+        subscribed.current = true;
+
+        getData({
+            search: searchText,
+            page: debouncedFilterState.pagination.page,
+            per_page: debouncedFilterState.pagination.per_page,
+            sort: debouncedFilterState.order.sort,
+            dir: debouncedFilterState.order.dir,
+            ...(
+                debouncedFilterState.extraFilter &&
+                debouncedFilterState.extraFilter.type && {
+                    type: debouncedFilterState.extraFilter.type
+                }),
+        });
+        return () => {
+            subscribed.current = false;
+        }
+    }, [
+        getData,
+        searchText,
+        debouncedFilterState.pagination.page,
+        debouncedFilterState.pagination.per_page,
+        debouncedFilterState.order,
+        debouncedFilterState.extraFilter
+    ]);
+
+    
 
     return (
         <MuiThemeProvider theme={makeActionStyles(columnsDefinition.length - 1)}>
@@ -217,7 +242,7 @@ const Table = () => {
                     count: totalRecords,
                     onFilterChange: (column, filterList, type) => {
                         const columnIndex = columns.findIndex(c => c.name === column);
-                        
+
                         filterManager.changeExtraFilter({
                             [column]: filterList[columnIndex].length ? filterList[columnIndex][0] : null
                         })
