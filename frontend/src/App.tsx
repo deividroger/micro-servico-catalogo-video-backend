@@ -19,7 +19,7 @@ const App: React.FC = () => {
           <SnackbarProvider>
             <React.Fragment>
               <CssBaseline />
-              <BrowserRouter>
+              <BrowserRouter basename="/admin">
                 <Spinner />
                 <Navbar />
                 <Box paddingTop={'70px'}>

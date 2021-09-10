@@ -1,6 +1,6 @@
 // If you want to run as a non-root user in the container, see .devcontainer/docker-compose.yml.
 {
-	"name": "Existing Docker Compose (Extend)",
+	"name": "code-micro-videos",
 
 	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
 	// The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
@@ -32,7 +32,7 @@
 		"calebporzio.better-phpunit",
 		"recca0120.vscode-phpunit",
 		"hbenl.vscode-test-explorer"
-	]
+	],
 
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -48,5 +48,5 @@
 	// "postCreateCommand": "apt-get update && apt-get install -y curl",
 
 	// Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
-	// "remoteUser": "vscode"
+	 "remoteUser": "www-data"
 }
