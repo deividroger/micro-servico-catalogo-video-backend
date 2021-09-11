@@ -12,7 +12,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
-class GenreUnitTest extends TestCase
+class GenreTest extends TestCase
 {
     private $genre;
 

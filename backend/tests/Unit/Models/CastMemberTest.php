@@ -11,7 +11,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class CastMemberUnitTest extends TestCase
+class CastMemberTest extends TestCase
 {
     private $castMember;
 

@@ -12,8 +12,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-
-class VideoUnitTest extends TestCase
+class VideoTest extends TestCase
 {
     private $video;
 
