@@ -16,7 +16,9 @@ use App\Models\Traits\SerializeDateToIso8601;
 
 class CastMember extends Model
 {
-    use Uuid,SoftDeletes,Filterable,SerializeDateToIso8601;
+
+    use SoftDeletes, Uuid, Filterable, SerializeDateToIso8601;
+
     
     const TYPE_DIRECTOR = 1;
     const TYPE_ACTOR = 2;
