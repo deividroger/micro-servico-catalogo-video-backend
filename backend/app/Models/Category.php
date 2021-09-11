@@ -6,10 +6,12 @@ use App\ModelFilters\CategoryFilter;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Traits\SerializeDateToIso8601;
+
 
 class Category extends Model
 {
-    use SoftDeletes, \App\Models\Traits\Uuid, Filterable;
+    use SoftDeletes, \App\Models\Traits\Uuid, Filterable, SerializeDateToIso8601;
     protected $fillable = ['name','description','is_active'];
     protected $dates =['deleted_at'];
     protected $casts = [

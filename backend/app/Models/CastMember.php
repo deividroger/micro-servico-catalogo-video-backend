@@ -11,11 +11,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\ModelFilters\CastMemberFilter;
 
 use EloquentFilter\Filterable;
+use App\Models\Traits\SerializeDateToIso8601;
 
 
 class CastMember extends Model
 {
-    use Uuid,SoftDeletes,Filterable;
+    use Uuid,SoftDeletes,Filterable,SerializeDateToIso8601;
     
     const TYPE_DIRECTOR = 1;
     const TYPE_ACTOR = 2;
