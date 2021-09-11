@@ -53,26 +53,26 @@ steps:
       name: 'gcr.io/cloud-builders/docker'
       args: ['exec','-t','app','php','/var/www/backend/artisan','migrate']
 
-    # - id: "Rodando o phpunit"
-    #   name: 'gcr.io/cloud-builders/docker'
-    #   args: ['exec','-t','app','php','/var/www/backend/vendor/bin/phpunit','-c','/var/www/backend/phpunit.xml']
+    - id: "Rodando o phpunit"
+      name: 'gcr.io/cloud-builders/docker'
+      args: ['exec','-t','app','php','/var/www/backend/vendor/bin/phpunit','-c','/var/www/backend/phpunit.xml']
 
-    -   id: "Copiando frontend .env"
-        name: 'gcr.io/cloud-builders/docker'
-        args: ['exec','-t','app','cp','/var/www/frontend/.env.example','/var/www/frontend/.env']
+    - id: "Copiando frontend .env"
+      name: 'gcr.io/cloud-builders/docker'
+      args: ['exec','-t','app','cp','/var/www/frontend/.env.example','/var/www/frontend/.env']
 
-    -   id: 'Install front-end'
-        name: 'gcr.io/cloud-builders/docker'
-        args: ['exec','-t','app','npm','install', '--prefix', '/var/www/frontend']
+    - id: 'Install front-end'
+      name: 'gcr.io/cloud-builders/docker'
+      args: ['exec','-t','app','npm','install', '--prefix', '/var/www/frontend']
     
-    -   id: 'Permission on scripts/build.sh'
-        name: 'gcr.io/cloud-builders/docker'
-        args: ['exec','-t','app','chmod','+x','/var/www/frontend/scripts/build.sh']
+    - id: 'Permission on scripts/build.sh'
+      name: 'gcr.io/cloud-builders/docker'
+      args: ['exec','-t','app','chmod','+x','/var/www/frontend/scripts/build.sh']
 
-    -   id: 'Build front-end'
-        name: 'gcr.io/cloud-builders/docker'
-        args: ['exec','-t','app','npm','run', 'build-laravel','--prefix', '/var/www/frontend']
+    - id: 'Build front-end'
+      name: 'gcr.io/cloud-builders/docker'
+      args: ['exec','-t','app','npm','run', 'build-laravel','--prefix', '/var/www/frontend']
 
-    -   id: 'Test Laravel and React integration'
-        name: 'gcr.io/cloud-builders/docker'
-        args: ['exec','-w','/var/www/backend','-t','app','php','artisan','dusk', '--env=testing']
+    - id: 'Test Laravel and React integration'
+      name: 'gcr.io/cloud-builders/docker'
+      args: ['exec','-w','/var/www/backend','-t','app','php','artisan','dusk', '--env=testing']

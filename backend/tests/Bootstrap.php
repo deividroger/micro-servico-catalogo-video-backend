@@ -5,7 +5,7 @@ namespace Tests;
 use PHPUnit\Runner\AfterLastTestHook;
 use PHPUnit\Runner\BeforeFirstTestHook;
 use Illuminate\Contracts\Console\Kernel;
-
+      
 class Bootstrap implements BeforeFirstTestHook, AfterLastTestHook
 {
     /*

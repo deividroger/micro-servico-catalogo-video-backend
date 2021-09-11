@@ -3,70 +3,63 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Category;
+use App\Models\Traits\SerializeDateToIso8601;
 use App\Models\Traits\Uuid;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use PHPUnit\Framework\TestCase;
 use EloquentFilter\Filterable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+
 class CategoryUnitTest extends TestCase
 {
-     private $category;
+    private $category;
 
-    public static function setUpBeforeClass(): void
+    protected function setUp(): void
     {
-        parent::setUpBeforeClass();
+        parent::setUp();
+        $this->category = new Category();
     }
 
-    public static function tearDownAfterClass(): void
+
+    public function testIfUseTraits()
     {
-        parent::tearDownAfterClass();
+        $traits = [
+            SoftDeletes::class,
+            Uuid::class,
+            Filterable::class,
+            SerializeDateToIso8601::class
+        ];
+        $categoryTraits = array_keys(class_uses(Category::class));
+        $this->assertEquals($traits, $categoryTraits);
     }
-
-     protected function setUp(): void
-     {
-         parent::setUp();
-
-         $this->category = new Category();
-     }
-
-     protected function tearDown(): void
-     {
-         parent::tearDown();
-     }
 
     public function testFillableAttribute()
     {
-        $fillable = ['name','description','is_active'];
-         $this->assertEquals($fillable,$this->category->getFillable()); 
+        $fillable = ['name', 'description', 'is_active'];
+        $this->assertEquals($fillable, $this->category->getFillable());
     }
 
-    public function testDatesAttributes(){
-        $dates = ['deleted_at','created_at','updated_at'];
-
-        foreach($dates as $date){
-            $this->assertContains($date,$this->category->getDates());
+    public function testDatesAttribute()
+    {
+        $dates = ['deleted_at', 'created_at', 'updated_at'];
+        foreach ($dates as $date) {
+            $this->assertContains($date, $this->category->getDates());
         }
-
-       $this->assertCount(count($dates), $this->category->getDates());
+        $this->assertCount(count($dates), $this->category->getDates());
     }
 
-    public function testIfUseTraits(){
-
-        $traits =[
-            SoftDeletes::class, Uuid::class,Filterable::class
-        ];
-       
-        $categoryTraits = array_keys( class_uses(Category::class));
-        $this->assertEquals($traits,$categoryTraits);
-    }
-
-    public function testCastsAttributes()
+    public function testCatsAttribute()
     {
-        $casts = ['id' =>'string','is_active'=>'boolean'];
-         $this->assertEquals($casts,$this->category->getCasts());
+        $casts = ['id' => 'string', 'is_active' => 'boolean'];
+        $this->assertEquals($casts, $this->category->getCasts());
     }
 
-    public function testIncrementing()
+    public function testIncrementingAttribute()
     {
-         $this->assertFalse($this->category->incrementing);
+        $this->assertFalse($this->category->incrementing);
     }
+
+
 }

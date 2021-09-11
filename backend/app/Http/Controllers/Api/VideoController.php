@@ -52,6 +52,7 @@ class VideoController extends BasicCrudController
         $obj->refresh();
 
         $resource = $this->resource();
+        $obj->load($this->queryBuilder()->getEagerLoads());
 
         return new $resource($obj);
     }
@@ -68,6 +69,8 @@ class VideoController extends BasicCrudController
         $obj->update($validateData);
 
         $resource = $this->resource();
+        $obj->load($this->queryBuilder()->getEagerLoads());
+
 
         return new $resource($obj);
     }

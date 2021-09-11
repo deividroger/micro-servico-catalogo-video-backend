@@ -1,61 +1,64 @@
 <?php
 
-namespace Tests\Feature\Models;
+namespace Tests\Unit\Models;
 
-use Tests\TestCase;
 use App\Models\CastMember;
+use App\Models\Traits\SerializeDateToIso8601;
+use App\Models\Traits\Uuid;
+use EloquentFilter\Filterable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-
-class CastMemberTest extends TestCase
+class CastMemberUnitTest extends TestCase
 {
-    use DatabaseMigrations;
+    private $castMember;
 
-    public function testList()
+    protected function setUp(): void
     {
-        factory(CastMember::class, 1)->create();
-        $castMembers = CastMember::all();
-        $this->assertCount(1, $castMembers);
-        $castMemberKey = array_keys($castMembers->first()->getAttributes());
-        $this->assertEqualsCanonicalizing(
-            ['id', 'name', 'type', 'created_at', 'updated_at', 'deleted_at'],
-            $castMemberKey
-        );
+        parent::setUp();
+        $this->castMember = new CastMember();
     }
 
-    public function testCreate()
+
+    public function testIfUseTraits()
     {
-        $castMember = CastMember::create([
-            'name' => 'test1',
-            'type' => 1
-        ]);
-        $castMember->refresh();
-        $this->assertEquals(36, strlen($castMember->id));
-        $this->assertEquals('test1',$castMember->name);
-        $this->assertEquals(1,$castMember->type);
+        $traits = [
+            SoftDeletes::class,
+            Uuid::class,
+            Filterable::class,
+            SerializeDateToIso8601::class
+        ];
+        $castMemberTraits = array_keys(class_uses(CastMember::class));
+        $this->assertEquals($traits, $castMemberTraits);
     }
 
-    public function testUpdate()
+    public function testFillableAttribute()
     {
-        $castMember = factory(CastMember::class)->create([
-            'type' => 1
-        ]);
-        
-        $data = ['name' => 'test_name_updated',
-                 'type' => 2];
-        $castMember->update($data);
+        $fillable = ['name', 'type'];
+        $this->assertEquals($fillable, $this->castMember->getFillable());
+    }
 
-        foreach ($data as $key => $value){
-            $this->assertEquals($value, $castMember->{$key});
+    public function testDatesAttribute()
+    {
+        $dates = ['deleted_at', 'created_at', 'updated_at'];
+        foreach ($dates as $date) {
+            $this->assertContains($date, $this->castMember->getDates());
         }
-
+        $this->assertCount(count($dates), $this->castMember->getDates());
     }
 
-    public function testDelete()
+    public function testCatsAttribute()
     {
-        $castMember = factory(CastMember::class)->create();
-        $castMember->delete();
-        $castMembers = CastMember::all();
-        $this->assertCount(0, $castMembers);
+        $casts = ['id' => 'string', 'type' => 'integer'];
+        $this->assertEquals($casts, $this->castMember->getCasts());
     }
+
+    public function testIncrementingAttribute()
+    {
+        $this->assertFalse($this->castMember->incrementing);
+    }
+
+
 }

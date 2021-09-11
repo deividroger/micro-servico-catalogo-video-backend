@@ -3,56 +3,63 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Genre;
-use PHPUnit\Framework\TestCase;
+use App\Models\Traits\SerializeDateToIso8601;
 use App\Models\Traits\Uuid;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use EloquentFilter\Filterable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+
 class GenreUnitTest extends TestCase
 {
     private $genre;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->genre = new Genre();
+    }
 
-     protected function setUp(): void
-     {
-         parent::setUp();
 
-         $this->genre = new Genre();
-     }
+    public function testIfUseTraits()
+    {
+        $traits = [
+            SoftDeletes::class,
+            Uuid::class,
+            Filterable::class,
+            SerializeDateToIso8601::class
+        ];
+        $genreTraits = array_keys(class_uses(Genre::class));
+        $this->assertEquals($traits, $genreTraits);
+    }
+
     public function testFillableAttribute()
     {
-        $fillable = ['name','description','is_active'];
-         $this->assertEquals($fillable,$this->genre->getFillable()); 
+        $fillable = ['name', 'is_active'];
+        $this->assertEquals($fillable, $this->genre->getFillable());
     }
 
-    public function testDatesAttributes(){
-        $dates = ['deleted_at','created_at','updated_at'];
-
-        foreach($dates as $date){
-            $this->assertContains($date,$this->genre->getDates());
+    public function testDatesAttribute()
+    {
+        $dates = ['deleted_at', 'created_at', 'updated_at'];
+        foreach ($dates as $date) {
+            $this->assertContains($date, $this->genre->getDates());
         }
-
-       $this->assertCount(count($dates), $this->genre->getDates());
+        $this->assertCount(count($dates), $this->genre->getDates());
     }
 
-    public function testIfUseTraits(){
-
-        $traits =[
-            SoftDeletes::class, Uuid::class, Filterable::class
-        ];
-       
-        $genreTraits = array_keys( class_uses(Genre::class));
-        
-        $this->assertEquals($traits,$genreTraits);
-    }
-
-    public function testCastsAttributes()
+    public function testCatsAttribute()
     {
-        $casts = ['id' =>'string','is_active'=>'boolean'];
-         $this->assertEquals($casts,$this->genre->getCasts());
+        $casts = ['id' => 'string', 'is_active' => 'boolean'];
+        $this->assertEquals($casts, $this->genre->getCasts());
     }
 
-    public function testIncrementing()
+    public function testIncrementingAttribute()
     {
-         $this->assertFalse($this->genre->incrementing);
+        $this->assertFalse($this->genre->incrementing);
     }
+
+
 }

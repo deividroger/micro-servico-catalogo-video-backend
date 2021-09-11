@@ -29,6 +29,9 @@ class GenreController extends BasicCrudController
 
         $resource = $this->resource();
 
+        $obj->load($this->queryBuilder()->getEagerLoads());
+
+
         return new $resource($obj);
 
     }
@@ -45,6 +48,8 @@ class GenreController extends BasicCrudController
         });
         
         $resource = $this->resource();
+        $obj->load($this->queryBuilder()->getEagerLoads());
+
         
         return new $resource($obj);
 
