@@ -57,7 +57,7 @@ steps:
     #   name: 'gcr.io/cloud-builders/docker'
     #   args: ['exec','-t','app','php','/var/www/backend/vendor/bin/phpunit','-c','/var/www/backend/phpunit.xml']
 
-       -   id: "Copiando frontend .env"
+    -   id: "Copiando frontend .env"
         name: 'gcr.io/cloud-builders/docker'
         args: ['exec','-t','app','cp','/var/www/frontend/.env.example','/var/www/frontend/.env']
 
